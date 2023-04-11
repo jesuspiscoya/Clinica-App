@@ -1,19 +1,20 @@
+import 'package:clinica_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
-class NavbarPage extends StatefulWidget {
+class NavbarDrawer extends StatefulWidget {
   int index = 0;
   final Function currentIndex;
 
-  NavbarPage({
+  NavbarDrawer({
     super.key,
     required this.currentIndex,
   });
 
   @override
-  State<NavbarPage> createState() => _NavbarPageState();
+  State<NavbarDrawer> createState() => _NavbarDrawerState();
 }
 
-class _NavbarPageState extends State<NavbarPage> {
+class _NavbarDrawerState extends State<NavbarDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -44,12 +45,18 @@ class _NavbarPageState extends State<NavbarPage> {
           const SizedBox(height: 10),
           itemDrawer(
               Icons.person_search_rounded, 'Buscar Paciente', Colors.white, 0),
+          const SizedBox(height: 16),
           itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
               Colors.white, 1),
+          const SizedBox(height: 16),
           itemDrawer(
               Icons.monitor_heart_rounded, 'Registrar Triaje', Colors.white, 2),
-          const SizedBox(height: 315),
-          itemDrawer(Icons.logout_rounded, 'Salir', Colors.red.shade600, 3)
+          const SizedBox(height: 265),
+          const Divider(thickness: 1.5, color: Colors.white),
+          const SizedBox(height: 5),
+          itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
+          const SizedBox(height: 5),
+          itemDrawer(Icons.logout_rounded, 'Salir', Colors.red.shade600, 4)
         ],
       ),
     );
@@ -57,7 +64,7 @@ class _NavbarPageState extends State<NavbarPage> {
 
   Widget itemDrawer(IconData icon, String label, Color color, int index) {
     return Padding(
-      padding: const EdgeInsets.only(right: 20, bottom: 20),
+      padding: const EdgeInsets.only(right: 20),
       child: InkWell(
         borderRadius: const BorderRadius.horizontal(right: Radius.circular(30)),
         child: Ink(
@@ -74,7 +81,7 @@ class _NavbarPageState extends State<NavbarPage> {
                   ),
                   borderRadius:
                       BorderRadius.horizontal(right: Radius.circular(30)),
-                  boxShadow: [BoxShadow(color: Colors.blue, blurRadius: 10)])
+                  boxShadow: [BoxShadow(color: Colors.blue, blurRadius: 8)])
               : null,
           child: Row(
             children: [
@@ -88,11 +95,14 @@ class _NavbarPageState extends State<NavbarPage> {
           ),
         ),
         onTap: () {
-          setState(() {
-            widget.index = index;
-            widget.currentIndex(index);
-            Navigator.of(context).pop();
-          });
+          index < 4
+              ? setState(() {
+                  widget.index = index;
+                  widget.currentIndex(index);
+                  Navigator.of(context).pop();
+                })
+              : Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()));
         },
       ),
     );

@@ -1,4 +1,3 @@
-import 'package:clinica_app/pages/navbar_page.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {

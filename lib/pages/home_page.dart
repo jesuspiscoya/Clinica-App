@@ -1,4 +1,5 @@
-import 'package:clinica_app/pages/navbar_page.dart';
+import 'package:clinica_app/Widgets/navbar_drawer.dart';
+import 'package:clinica_app/pages/profile_page.dart';
 import 'package:clinica_app/pages/register_page.dart';
 import 'package:clinica_app/pages/search_page.dart';
 import 'package:clinica_app/pages/triage_page.dart';
@@ -17,23 +18,27 @@ class _HomePageState extends State<HomePage> {
   late String formattedDate =
       DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now());
   int index = 0;
-  late final NavbarPage navbarPage;
-  final List<Widget> listPages = [
-    const SearchPage(),
-    const RegisterPage(),
-    const TriagePAge(),
-  ];
+  late final NavbarDrawer navbarPage;
+  late final SearchPage searchPage;
 
   @override
   void initState() {
     initializeDateFormatting('es-PE', '').then((value) =>
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
-    navbarPage = NavbarPage(currentIndex: (i) => setState(() => index = i));
+    navbarPage = NavbarDrawer(currentIndex: (i) => setState(() => index = i));
+    searchPage = SearchPage(currentIndex: (i) => setState(() => index = i));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> listPages = [
+      searchPage,
+      const RegisterPage(),
+      const TriagePAge(),
+      const ProfilePage(),
+    ];
+
     return Scaffold(
       drawer: navbarPage,
       appBar: AppBar(
@@ -66,8 +71,9 @@ class _HomePageState extends State<HomePage> {
               minWidth: 0,
               shape: const CircleBorder(),
               padding: EdgeInsets.zero,
-              child: const Icon(Icons.account_circle_rounded,
-                  color: Colors.white, size: 45),
+              child: CircleAvatar(
+                  maxRadius: 22,
+                  child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
               onPressed: () => true),
           const SizedBox(width: 13)
         ],
@@ -105,7 +111,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 13),
             listPages[index]
           ],
         ),
