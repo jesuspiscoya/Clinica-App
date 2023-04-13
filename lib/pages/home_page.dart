@@ -64,7 +64,10 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.zero,
                     child: const Icon(Icons.sort_rounded,
                         color: Colors.white, size: 33),
-                    onPressed: () => Scaffold.of(context).openDrawer()))),
+                    onPressed: () {
+                      // FocusScope.of(context).unfocus();
+                      Scaffold.of(context).openDrawer();
+                    }))),
         leadingWidth: 55,
         actions: [
           MaterialButton(
@@ -93,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                       'Buenos Días, Jesus Piscoya',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 19,
                           fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 10),
@@ -103,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                       style: const TextStyle(
                           color: Colors.white,
                           height: 1.3,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 20)

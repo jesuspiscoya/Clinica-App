@@ -31,9 +31,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
+
   #Add dependencies
-  flutter_svg: ^2.0.4
-  intl: ^0.18.0
+  flutter_svg: ^2.0.5
+  intl: ^0.17.0
   animate_do: ^3.0.2
   fluttertoast: ^8.2.1
 

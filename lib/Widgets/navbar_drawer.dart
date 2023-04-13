@@ -19,8 +19,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: const Color(0xFF131935),
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
           UserAccountsDrawerHeader(
             accountName: const Text('Jesus Piscoya',
@@ -45,18 +44,18 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
           const SizedBox(height: 10),
           itemDrawer(
               Icons.person_search_rounded, 'Buscar Paciente', Colors.white, 0),
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
           itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
               Colors.white, 1),
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
           itemDrawer(
               Icons.monitor_heart_rounded, 'Registrar Triaje', Colors.white, 2),
-          const SizedBox(height: 265),
-          const Divider(thickness: 1.5, color: Colors.white),
-          const SizedBox(height: 5),
+          const SizedBox(height: 15),
           itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
+          const Expanded(child: SizedBox()),
+          const Divider(thickness: 1.5, color: Colors.white),
+          itemDrawer(Icons.logout_rounded, 'Salir', Colors.red.shade600, 4),
           const SizedBox(height: 5),
-          itemDrawer(Icons.logout_rounded, 'Salir', Colors.red.shade600, 4)
         ],
       ),
     );
@@ -68,7 +67,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
       child: InkWell(
         borderRadius: const BorderRadius.horizontal(right: Radius.circular(30)),
         child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: widget.index == index
               ? const BoxDecoration(
                   gradient: RadialGradient(
@@ -86,11 +85,11 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
           child: Row(
             children: [
               const SizedBox(width: 18),
-              Icon(icon, size: 30, color: color),
+              Icon(icon, size: 26, color: color),
               const SizedBox(width: 14),
               Text(label,
                   style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600, color: color))
+                      fontSize: 16, fontWeight: FontWeight.w600, color: color))
             ],
           ),
         ),

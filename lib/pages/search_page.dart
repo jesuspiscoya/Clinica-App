@@ -1,3 +1,4 @@
+import 'package:clinica_app/Widgets/input_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,68 +27,12 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const SizedBox(height: 15),
-      AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        child: Form(
-          key: formKeyBuscar,
-          child: SizedBox(
-            width: buscarDni ? 240 : 151,
-            child: TextFormField(
-              controller: buscarController,
-              keyboardType: TextInputType.number,
-              textAlignVertical: TextAlignVertical.center,
-              style: const TextStyle(color: Colors.white),
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(8),
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              decoration: InputDecoration(
-                  isDense: true,
-                  filled: true,
-                  contentPadding: const EdgeInsets.only(left: 15),
-                  fillColor: const Color(0xFF131935),
-                  hintText: 'Ingrese DNI',
-                  hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
-                  border: UnderlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(30)),
-                  errorBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(width: 1.3, color: Colors.redAccent),
-                      borderRadius: BorderRadius.circular(30)),
-                  suffixIcon: Container(
-                    height: 0,
-                    width: 0,
-                    margin: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        center: Alignment.bottomLeft,
-                        radius: 1.1,
-                        colors: <Color>[
-                          Color(0xFF4284DB),
-                          Color(0xFF29EAC4),
-                        ],
-                      ),
-                    ),
-                    child: MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.zero,
-                      shape: const CircleBorder(),
-                      child: const Icon(Icons.search_rounded, size: 23),
-                      onPressed: () => setState(() => submitBuscar()),
-                    ),
-                  )),
-              onTap: () => setState(() => buscarDni = true),
-              validator: (value) => value!.isEmpty ? 'DNI inválido.' : null,
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(height: 20),
-      Card(
+    return Column(
+      children: [
+        const SizedBox(height: 15),
+        buttonBuscar(),
+        const SizedBox(height: 20),
+        Card(
           elevation: 18,
           margin: const EdgeInsets.symmetric(horizontal: 20),
           shape:
@@ -95,200 +40,154 @@ class _SearchPageState extends State<SearchPage> {
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(
-                  readOnly: true,
-                  enabled: false,
-                  controller: nombresController,
-                  decoration: const InputDecoration(
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.black12,
-                      labelText: 'Nombres',
-                      labelStyle: TextStyle(height: 1.5),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      border: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10)))),
-                ),
+                InputForm(
+                    label: 'Nombres',
+                    active: false,
+                    inputController: nombresController),
                 const SizedBox(height: 10),
-                TextField(
-                  readOnly: true,
-                  enabled: false,
-                  controller: apellidosController,
-                  decoration: const InputDecoration(
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.black12,
-                      labelText: 'Apellidos',
-                      labelStyle: TextStyle(height: 1.5),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      border: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10)))),
-                ),
+                InputForm(
+                    label: 'Apellidos',
+                    active: false,
+                    inputController: nombresController),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: fechaController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Fech. Nacimiento',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    ),
+                    InputForm(
+                        label: 'Fech. Nacimiento',
+                        active: false,
+                        inputController: fechaController),
                     const SizedBox(width: 10),
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: edadController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Edad',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    )
+                    InputForm(
+                        label: 'Edad',
+                        active: false,
+                        inputController: edadController)
                   ],
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: sexoController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Sexo',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    ),
+                    InputForm(
+                        label: 'Sexo',
+                        active: false,
+                        inputController: sexoController),
                     const SizedBox(width: 10),
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: estadoController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Estado Civil',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    )
+                    InputForm(
+                        label: 'Estado Civil',
+                        active: false,
+                        inputController: estadoController)
                   ],
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: sangreController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Tipo de Sangre',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    ),
+                    InputForm(
+                        label: 'Tipo de Sangre',
+                        active: false,
+                        inputController: sangreController),
                     const SizedBox(width: 10),
-                    Flexible(
-                      child: TextField(
-                        readOnly: true,
-                        enabled: false,
-                        controller: donacionController,
-                        decoration: const InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: Colors.black12,
-                            labelText: 'Don. Órganos',
-                            labelStyle: TextStyle(height: 1.5),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            border: UnderlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    )
+                    InputForm(
+                        label: 'Don. Órganos',
+                        active: false,
+                        inputController: donacionController)
                   ],
                 ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  child: Container(
-                    height: buscar ? 45 : 0,
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: const BoxDecoration(
-                        gradient: RadialGradient(
-                          center: Alignment.bottomLeft,
-                          radius: 3,
-                          colors: <Color>[
-                            Color.fromARGB(255, 108, 200, 236),
-                            Color.fromARGB(255, 35, 102, 189),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    child: MaterialButton(
-                      child: const Text('Realizar Triaje',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600)),
-                      onPressed: () => setState(() => widget.currentIndex(2)),
-                    ),
-                  ),
-                ),
+                buttonTriaje()
               ],
             ),
-          ))
-    ]);
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buttonBuscar() {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      child: Form(
+        key: formKeyBuscar,
+        child: SizedBox(
+          width: buscarDni ? 240 : 151,
+          child: TextFormField(
+            controller: buscarController,
+            keyboardType: TextInputType.number,
+            textAlignVertical: TextAlignVertical.center,
+            style: const TextStyle(color: Colors.white),
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(8),
+              FilteringTextInputFormatter.digitsOnly
+            ],
+            decoration: InputDecoration(
+                isDense: true,
+                filled: true,
+                contentPadding: const EdgeInsets.only(left: 15),
+                fillColor: const Color(0xFF131935),
+                hintText: 'Ingrese DNI',
+                hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                border: UnderlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(30)),
+                errorBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(width: 1.3, color: Colors.redAccent),
+                    borderRadius: BorderRadius.circular(30)),
+                suffixIcon: Container(
+                  height: 0,
+                  width: 0,
+                  margin: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      center: Alignment.bottomLeft,
+                      radius: 1.1,
+                      colors: <Color>[
+                        Color(0xFF4284DB),
+                        Color(0xFF29EAC4),
+                      ],
+                    ),
+                  ),
+                  child: MaterialButton(
+                    minWidth: 0,
+                    padding: EdgeInsets.zero,
+                    shape: const CircleBorder(),
+                    child: const Icon(Icons.search_rounded, size: 23),
+                    onPressed: () => setState(() => submitBuscar()),
+                  ),
+                )),
+            onTap: () => setState(() => buscarDni = true),
+            validator: (value) => value!.isEmpty ? 'DNI inválido.' : null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buttonTriaje() {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      child: Container(
+        height: buscar ? 45 : 0,
+        margin: const EdgeInsets.only(top: 10),
+        decoration: const BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.bottomLeft,
+              radius: 3,
+              colors: <Color>[
+                Color.fromARGB(255, 108, 200, 236),
+                Color.fromARGB(255, 35, 102, 189),
+              ],
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        child: MaterialButton(
+          shape: const StadiumBorder(),
+          onPressed: () => setState(() => widget.currentIndex(2)),
+          child: const Text('Realizar Triaje',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        ),
+      ),
+    );
   }
 
   void submitBuscar() {
