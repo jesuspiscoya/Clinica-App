@@ -103,61 +103,59 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget buttonBuscar() {
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 300),
-      child: Form(
-        key: formKeyBuscar,
-        child: SizedBox(
-          width: buscarDni ? 240 : 151,
-          child: TextFormField(
-            controller: buscarController,
-            keyboardType: TextInputType.number,
-            textAlignVertical: TextAlignVertical.center,
-            style: const TextStyle(color: Colors.white),
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(8),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-            decoration: InputDecoration(
-                isDense: true,
-                filled: true,
-                contentPadding: const EdgeInsets.only(left: 15),
-                fillColor: const Color(0xFF131935),
-                hintText: 'Ingrese DNI',
-                hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(30)),
-                errorBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(width: 1.3, color: Colors.redAccent),
-                    borderRadius: BorderRadius.circular(30)),
-                suffixIcon: Container(
-                  height: 0,
-                  width: 0,
-                  margin: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      center: Alignment.bottomLeft,
-                      radius: 1.1,
-                      colors: <Color>[
-                        Color(0xFF4284DB),
-                        Color(0xFF29EAC4),
-                      ],
-                    ),
+    return Form(
+      key: formKeyBuscar,
+      child: SizedBox(
+        width: 210,
+        child: TextFormField(
+          controller: buscarController,
+          keyboardType: TextInputType.number,
+          textAlignVertical: TextAlignVertical.center,
+          style: const TextStyle(color: Colors.white),
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(8),
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          decoration: InputDecoration(
+              isDense: true,
+              filled: true,
+              contentPadding: const EdgeInsets.only(left: 15),
+              fillColor: const Color(0xFF131935),
+              hintText: 'Ingrese DNI',
+              hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(30)),
+              errorBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(width: 1.3, color: Colors.redAccent),
+                  borderRadius: BorderRadius.circular(30)),
+              suffixIcon: Container(
+                height: 0,
+                width: 0,
+                margin: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    center: Alignment.bottomLeft,
+                    radius: 1.1,
+                    colors: <Color>[
+                      Color(0xFF4284DB),
+                      Color(0xFF29EAC4),
+                    ],
                   ),
-                  child: MaterialButton(
-                    minWidth: 0,
-                    padding: EdgeInsets.zero,
-                    shape: const CircleBorder(),
-                    child: const Icon(Icons.search_rounded, size: 23),
-                    onPressed: () => setState(() => submitBuscar()),
-                  ),
-                )),
-            onTap: () => setState(() => buscarDni = true),
-            validator: (value) => value!.isEmpty ? 'DNI inválido.' : null,
-          ),
+                ),
+                child: MaterialButton(
+                  minWidth: 0,
+                  padding: EdgeInsets.zero,
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.search_rounded,
+                      size: 23, color: Colors.white),
+                  onPressed: () => setState(() => submitBuscar()),
+                ),
+              )),
+          onTap: () => setState(() => buscarDni = true),
+          validator: (value) => value!.isEmpty ? 'Ingrese DNI válido.' : null,
         ),
       ),
     );

@@ -20,9 +20,16 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
   late final NavbarDrawer navbarPage;
   late final SearchPage searchPage;
+  int hora = DateTime.now().hour - 5;
+  late String saludo;
 
   @override
   void initState() {
+    hora < 5 || hora > 18
+        ? saludo = 'Buenas Noches'
+        : hora > 4 || hora < 12
+            ? saludo = 'Buenas Días'
+            : 'Buenas Tardes';
     initializeDateFormatting('es-PE', '').then((value) =>
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
     navbarPage = NavbarDrawer(currentIndex: (i) => setState(() => index = i));
@@ -92,9 +99,9 @@ class _HomePageState extends State<HomePage> {
               child: Center(
                 child: Column(
                   children: [
-                    const Text(
-                      'Buenos Días, Jesus Piscoya',
-                      style: TextStyle(
+                    Text(
+                      '$saludo, Jesus Piscoya',
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,
                           fontWeight: FontWeight.w600),

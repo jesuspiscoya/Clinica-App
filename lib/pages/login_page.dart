@@ -65,78 +65,16 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'Bienvenido',
                         style: TextStyle(
-                            fontSize: 36,
+                            fontSize: 35,
                             fontWeight: FontWeight.bold,
                             color: Colors.blueAccent.shade700),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
-                      cursorHeight: 22,
-                      controller: usuarioController,
-                      style: TextStyle(
-                          color: Colors.greenAccent.shade700, fontSize: 17),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        label: const Padding(
-                            padding: EdgeInsets.only(bottom: 20),
-                            child: Text('Usuario')),
-                        labelStyle: TextStyle(
-                            fontSize: 18,
-                            color: Colors.blueAccent.shade700,
-                            fontWeight: FontWeight.w600),
-                        floatingLabelStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.blueAccent.shade700,
-                            fontWeight: FontWeight.w600,
-                            height: 0.5),
-                        contentPadding: const EdgeInsets.only(bottom: 10),
-                        enabledBorder: const UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1.5, color: Colors.cyan)),
-                        focusedBorder: const UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1.5, color: Colors.cyan)),
-                      ),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Ingrese un usuario válido.' : null,
-                    ),
+                    inputForm('Usuario', usuarioController),
                     const SizedBox(height: 45),
-                    TextFormField(
-                      cursorHeight: 22,
-                      controller: passwordController,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      obscureText: true,
-                      style: TextStyle(
-                          color: Colors.greenAccent.shade700, fontSize: 17),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        label: const Padding(
-                            padding: EdgeInsets.only(bottom: 20),
-                            child: Text('Contraseña')),
-                        labelStyle: TextStyle(
-                            fontSize: 18,
-                            color: Colors.blueAccent.shade700,
-                            fontWeight: FontWeight.w600),
-                        floatingLabelStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.blueAccent.shade700,
-                            fontWeight: FontWeight.w600,
-                            height: 0.5),
-                        contentPadding: const EdgeInsets.only(bottom: 10),
-                        enabledBorder: const UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1.5, color: Colors.cyan)),
-                        focusedBorder: const UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1.5, color: Colors.cyan)),
-                      ),
-                      validator: (value) => value!.isEmpty
-                          ? 'Ingrese una contraseña válida.'
-                          : null,
-                    ),
-                    const SizedBox(height: 35),
+                    inputForm('Contraseña', passwordController),
+                    const SizedBox(height: 40),
                     Container(
                       width: MediaQuery.of(context).size.width,
                       height: 55,
@@ -166,6 +104,38 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget inputForm(String label, TextEditingController controller) {
+    return TextFormField(
+      cursorHeight: 22,
+      controller: controller,
+      enableSuggestions: label == 'Contraseña' ? false : true,
+      autocorrect: label == 'Contraseña' ? false : true,
+      obscureText: label == 'Contraseña' ? true : false,
+      style: TextStyle(color: Colors.greenAccent.shade700, fontSize: 16),
+      decoration: InputDecoration(
+        isDense: true,
+        label: Padding(
+            padding: const EdgeInsets.only(bottom: 20), child: Text(label)),
+        labelStyle: TextStyle(
+            fontSize: 17,
+            color: Colors.blueAccent.shade700,
+            fontWeight: FontWeight.w600),
+        floatingLabelStyle: TextStyle(
+            fontSize: 19,
+            color: Colors.blueAccent.shade700,
+            fontWeight: FontWeight.w600,
+            height: 0.8),
+        contentPadding: const EdgeInsets.only(bottom: 10),
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(width: 1.5, color: Colors.cyan)),
+        focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(width: 1.5, color: Colors.cyan)),
+      ),
+      validator: (value) =>
+          value!.isEmpty ? '${label.toLowerCase()} inválido.' : null,
     );
   }
 

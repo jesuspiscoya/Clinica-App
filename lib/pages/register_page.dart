@@ -1,5 +1,6 @@
-import 'package:clinica_app/Widgets/dropdonw_form.dart';
+import 'package:clinica_app/Widgets/dropdown_form.dart';
 import 'package:clinica_app/Widgets/input_form.dart';
+import 'package:clinica_app/Widgets/dropdown_ubigeo.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -13,15 +14,30 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool buscar = false, buscarDni = false;
   GlobalKey<FormState> formKeyRegistrar = GlobalKey<FormState>();
-  TextEditingController buscarController = TextEditingController();
+  TextEditingController dniController = TextEditingController();
   TextEditingController nombresController = TextEditingController();
   TextEditingController apellidosController = TextEditingController();
   TextEditingController fechaController = TextEditingController();
-  TextEditingController edadController = TextEditingController();
+  TextEditingController direccionController = TextEditingController();
   DropdownForm dropdownSexo = DropdownForm(label: 'Sexo');
   DropdownForm dropdownEstado = DropdownForm(label: 'Estado Civil');
   DropdownForm dropdownTipo = DropdownForm(label: 'Tip. Sangre');
   DropdownForm dropdownDonacion = DropdownForm(label: 'Don. Órganos');
+  late DropdownUbigeo dropdownDistrito = DropdownUbigeo(label: 'Distrito');
+  late DropdownUbigeo dropdownProvincia = DropdownUbigeo(label: 'Provincia');
+  late DropdownUbigeo dropdownDepartamento = DropdownUbigeo(
+      label: 'Departamento',
+      selectItem: (departamento) =>
+          setState(() => dropdownProvincia = DropdownUbigeo(
+                label: 'Provincia',
+                departamento: departamento,
+                selectItem: (provincia) =>
+                    setState(() => dropdownDistrito = DropdownUbigeo(
+                          label: 'Distrito',
+                          departamento: departamento,
+                          provincia: provincia,
+                        )),
+              )));
 
   @override
   Widget build(BuildContext context) {
@@ -41,29 +57,41 @@ class _RegisterPageState extends State<RegisterPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   InputForm(
+                    label: 'DNI',
+                    active: true,
+                    inputController: dniController,
+                    buscarDni: (nombres, apellidos) => setState(() {
+                      nombresController.text = nombres;
+                      apellidosController.text = apellidos;
+                      FocusScope.of(context).unfocus();
+                    }),
+                  ),
+                  const SizedBox(height: 10),
+                  InputForm(
                       label: 'Nombres',
-                      active: true,
+                      active: false,
                       inputController: nombresController),
                   const SizedBox(height: 10),
                   InputForm(
                       label: 'Apellidos',
-                      active: true,
+                      active: false,
                       inputController: apellidosController),
                   const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InputForm(
-                          label: 'Nacimiento',
-                          active: true,
-                          inputController: fechaController),
-                      const SizedBox(width: 10),
-                      InputForm(
-                          label: 'Edad',
-                          active: true,
-                          inputController: edadController),
-                    ],
-                  ),
+                  InputForm(
+                      label: 'Nacimiento',
+                      active: true,
+                      inputController: fechaController),
+                  const SizedBox(height: 10),
+                  dropdownDepartamento,
+                  const SizedBox(height: 10),
+                  dropdownProvincia,
+                  const SizedBox(height: 10),
+                  dropdownDistrito,
+                  const SizedBox(height: 10),
+                  InputForm(
+                      label: 'Dirección',
+                      active: true,
+                      inputController: direccionController),
                   const SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +116,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-        )
+        ),
+        const SizedBox(height: 15)
       ],
     );
   }
@@ -119,12 +148,12 @@ class _RegisterPageState extends State<RegisterPage> {
     if (formKeyRegistrar.currentState!.validate()) {
       limpiar();
       Fluttertoast.showToast(
-          msg: "Datos registrados con éxito.",
+          msg: "Paciente registrado con éxito.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.green,
-          textColor: Colors.black,
+          textColor: Colors.white,
           fontSize: 16.0);
       FocusScope.of(context).unfocus();
     }
@@ -134,10 +163,23 @@ class _RegisterPageState extends State<RegisterPage> {
     nombresController.clear();
     apellidosController.clear();
     fechaController.clear();
-    edadController.clear();
+    direccionController.clear();
     dropdownSexo = DropdownForm(label: 'Sexo');
     dropdownEstado = DropdownForm(label: 'Estado Civil');
     dropdownTipo = DropdownForm(label: 'Tip. Sangre');
     dropdownDonacion = DropdownForm(label: 'Don. Órganos');
+    dropdownDistrito = DropdownUbigeo(label: 'Distrito');
+    dropdownProvincia = DropdownUbigeo(label: 'Provincia');
+    dropdownDepartamento = DropdownUbigeo(
+        label: 'Departamento',
+        selectItem: (departamento) => setState(() => dropdownProvincia =
+            DropdownUbigeo(
+                label: 'Provincia',
+                departamento: departamento,
+                selectItem: (provincia) => setState(() => dropdownDistrito =
+                    DropdownUbigeo(
+                        label: 'Distrito',
+                        departamento: departamento,
+                        provincia: provincia)))));
   }
 }
