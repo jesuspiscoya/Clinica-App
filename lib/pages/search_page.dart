@@ -1,7 +1,9 @@
 import 'package:clinica_app/Widgets/input_form.dart';
+import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class SearchPage extends StatefulWidget {
   final Function currentIndex;
@@ -15,7 +17,8 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   bool buscar = false, buscarDni = false;
   GlobalKey<FormState> formKeyBuscar = GlobalKey<FormState>();
-  TextEditingController buscarController = TextEditingController();
+  TextEditingController dniController = TextEditingController();
+  TextEditingController nhcController = TextEditingController();
   TextEditingController nombresController = TextEditingController();
   TextEditingController apellidosController = TextEditingController();
   TextEditingController fechaController = TextEditingController();
@@ -43,6 +46,11 @@ class _SearchPageState extends State<SearchPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 InputForm(
+                    label: 'NHC',
+                    active: false,
+                    inputController: nhcController),
+                const SizedBox(height: 10),
+                InputForm(
                     label: 'Nombres',
                     active: false,
                     inputController: nombresController),
@@ -50,7 +58,7 @@ class _SearchPageState extends State<SearchPage> {
                 InputForm(
                     label: 'Apellidos',
                     active: false,
-                    inputController: nombresController),
+                    inputController: apellidosController),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -108,10 +116,11 @@ class _SearchPageState extends State<SearchPage> {
       child: SizedBox(
         width: 210,
         child: TextFormField(
-          controller: buscarController,
+          controller: dniController,
           keyboardType: TextInputType.number,
           textAlignVertical: TextAlignVertical.center,
           style: const TextStyle(color: Colors.white),
+          textInputAction: TextInputAction.search,
           inputFormatters: [
             LengthLimitingTextInputFormatter(8),
             FilteringTextInputFormatter.digitsOnly
@@ -190,31 +199,37 @@ class _SearchPageState extends State<SearchPage> {
 
   void submitBuscar() {
     if (formKeyBuscar.currentState!.validate()) {
-      if (buscarController.text == '74644014') {
-        buscar = true;
-        buscarDni = false;
-        nombresController.text = 'Jesus Rafael';
-        apellidosController.text = 'Piscoya Bances';
-        fechaController.text = '03/05/2001';
-        edadController.text = '21';
-        sexoController.text = 'Masculino';
-        estadoController.text = 'Soltero';
-        sangreController.text = 'O+';
-        donacionController.text = 'Sí';
-        buscarController.clear();
-        FocusScope.of(context).unfocus();
-      } else {
-        buscar = false;
-        limpiar();
-        Fluttertoast.showToast(
-            msg: "Paciente no registrado.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.redAccent,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
+      PacienteDao().buscar(dniController.text).then((value) {
+        if (value == null) {
+          buscar = false;
+          limpiar();
+          Fluttertoast.showToast(
+              msg: "Paciente no registrado.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.redAccent,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        } else {
+          buscar = true;
+          buscarDni = false;
+          nhcController.text = value['nhc'];
+          nombresController.text = value['nombres'];
+          apellidosController.text =
+              '${value['ape_paterno']} ${value['ape_materno']}';
+          DateTime fechaInput =
+              DateFormat('dd-MM-yyyy').parse(value['fec_nacimiento']);
+          fechaController.text = DateFormat('dd/MM/yyyy').format(fechaInput);
+          edadController.text = '${DateTime.now().year - fechaInput.year}';
+          sexoController.text = value['sexo'];
+          estadoController.text = value['est_civil'];
+          sangreController.text = value['tip_sangre'];
+          donacionController.text = value['don_organos'];
+          // dniController.clear();
+          FocusScope.of(context).unfocus();
+        }
+      });
     }
   }
 

@@ -35,7 +35,9 @@ class _HomePageState extends State<HomePage> {
             : 'Buenas Tardes';
     initializeDateFormatting('es-PE', '').then((value) =>
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
-    navbarPage = NavbarDrawer(currentIndex: (i) => setState(() => index = i));
+    navbarPage = NavbarDrawer(
+        enfermera: widget.enfermera,
+        currentIndex: (i) => setState(() => index = i));
     searchPage = SearchPage(currentIndex: (i) => setState(() => index = i));
     super.initState();
   }
@@ -57,14 +59,20 @@ class _HomePageState extends State<HomePage> {
         title: Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: Colors.white),
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              gradient: RadialGradient(
+                center: Alignment.bottomLeft,
+                radius: 2.7,
+                colors: <Color>[
+                  Color(0xFF4284DB),
+                  Color(0xFF29EAC4),
+                ],
+              ),
+            ),
             child: const Text('Juan Pablo II')),
         centerTitle: true,
-        titleTextStyle: TextStyle(
-            color: Colors.blueAccent.shade400,
-            fontSize: 18,
-            fontWeight: FontWeight.w800),
+        titleTextStyle: const TextStyle(
+            color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
         backgroundColor: const Color(0xFF131935),
         leading: Builder(
             builder: (BuildContext context) => Padding(

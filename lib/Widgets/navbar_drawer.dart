@@ -1,12 +1,15 @@
+import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class NavbarDrawer extends StatefulWidget {
   int index = 0;
+  final Enfermera enfermera;
   final Function currentIndex;
 
   NavbarDrawer({
     super.key,
+    required this.enfermera,
     required this.currentIndex,
   });
 
@@ -21,16 +24,18 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
       backgroundColor: const Color(0xFF131935),
       child: Column(
         children: [
-          const UserAccountsDrawerHeader(
-            accountName: Text('Jesus Piscoya',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            accountEmail: Text('Médico',
+          UserAccountsDrawerHeader(
+            accountName: Text(
+                '${widget.enfermera.nombres} ${widget.enfermera.apellidoPaterno}',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            accountEmail: const Text('Personal de Salud',
                 style: TextStyle(
                     color: Colors.amber, fontWeight: FontWeight.w600)),
-            currentAccountPicture: CircleAvatar(
+            currentAccountPicture: const CircleAvatar(
                 // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
                 child: Icon(Icons.person_rounded, size: 55)),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.bottomLeft,
                   radius: 2,

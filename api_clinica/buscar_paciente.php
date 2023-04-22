@@ -4,7 +4,7 @@ require 'conexion.php';
 $obj = new Conexion;
 $conexion = $obj->getConexion();
 
-$sql = "CALL LoginEnfermera('" . $_POST['usuario'] . "','" . sha1($_POST['password']) . "')";
+$sql = "CALL BuscarPaciente('" . $_POST['dni'] . "')";
 $resultado = mysqli_query($conexion, $sql);
 
 if ($row = $resultado->fetch_assoc()) {
