@@ -1,8 +1,11 @@
 import 'package:clinica_app/Widgets/dropdown_form.dart';
 import 'package:clinica_app/Widgets/input_form.dart';
 import 'package:clinica_app/Widgets/dropdown_ubigeo.dart';
+import 'package:clinica_app/model/paciente.dart';
+import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -17,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController dniController = TextEditingController();
   TextEditingController nombresController = TextEditingController();
   TextEditingController apellidosController = TextEditingController();
+  TextEditingController telefonoController = TextEditingController();
   TextEditingController fechaController = TextEditingController();
   TextEditingController direccionController = TextEditingController();
   DropdownForm dropdownSexo = DropdownForm(label: 'Sexo');
@@ -78,9 +82,23 @@ class _RegisterPageState extends State<RegisterPage> {
                       inputController: apellidosController),
                   const SizedBox(height: 10),
                   InputForm(
+                      label: 'Teléfono',
+                      active: true,
+                      inputController: telefonoController),
+                  const SizedBox(height: 10),
+                  InputForm(
                       label: 'Nacimiento',
                       active: true,
                       inputController: fechaController),
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      dropdownSexo,
+                      const SizedBox(width: 10),
+                      dropdownEstado
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   dropdownDepartamento,
                   const SizedBox(height: 10),
@@ -92,15 +110,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       label: 'Dirección',
                       active: true,
                       inputController: direccionController),
-                  const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      dropdownSexo,
-                      const SizedBox(width: 10),
-                      dropdownEstado
-                    ],
-                  ),
                   const SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,23 +154,58 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void submitRegistrar() {
+    List<String> apellidos = apellidosController.text.split(' ');
+    DateTime fechaInput = DateFormat('dd/MM/yyyy').parse(fechaController.text);
+    String fechaOutput = DateFormat('yyyy/MM/dd').format(fechaInput);
     if (formKeyRegistrar.currentState!.validate()) {
-      limpiar();
-      Fluttertoast.showToast(
-          msg: "Paciente registrado con éxito.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      FocusScope.of(context).unfocus();
+      Paciente paciente = Paciente(
+          nombres: nombresController.text,
+          apellidoPaterno: apellidos[0],
+          apellidoMaterno: apellidos[1],
+          dni: dniController.text,
+          telefono: telefonoController.text,
+          fechaNacimiento: fechaOutput,
+          sexo: dropdownSexo.value!,
+          estadoCivil: dropdownEstado.value!,
+          departamento: dropdownDepartamento.valueLabel!,
+          provincia: dropdownProvincia.valueLabel!,
+          distrito: dropdownDistrito.valueLabel!,
+          direccion: direccionController.text,
+          nhc: 0,
+          tipoSangre: dropdownTipo.value!,
+          donacionOrganos: dropdownDonacion.value!);
+      PacienteDao().registrar(paciente).then((value) {
+        if (value) {
+          limpiar();
+          Fluttertoast.showToast(
+              msg: "Paciente registrado con éxito.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          FocusScope.of(context).unfocus();
+        } else {
+          Fluttertoast.showToast(
+              msg: "Error al registrar paciente.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          FocusScope.of(context).unfocus();
+        }
+      });
     }
   }
 
   void limpiar() {
+    dniController.clear();
     nombresController.clear();
     apellidosController.clear();
+    telefonoController.clear();
     fechaController.clear();
     direccionController.clear();
     dropdownSexo = DropdownForm(label: 'Sexo');

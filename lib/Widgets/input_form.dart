@@ -24,12 +24,14 @@ class InputForm extends StatefulWidget {
 }
 
 class _InputFormState extends State<InputForm> {
+  GlobalKey<FormFieldState> keyDni = GlobalKey<FormFieldState>();
   bool load = false;
 
   @override
   Widget build(BuildContext context) {
     return Flexible(
       child: TextFormField(
+        key: widget.label == 'DNI' ? keyDni : null,
         autofocus: false,
         readOnly: !widget.active,
         enabled: widget.active,
@@ -46,7 +48,12 @@ class _InputFormState extends State<InputForm> {
                 LengthLimitingTextInputFormatter(8),
                 FilteringTextInputFormatter.digitsOnly
               ]
-            : null,
+            : widget.label == 'Teléfono'
+                ? [
+                    LengthLimitingTextInputFormatter(9),
+                    FilteringTextInputFormatter.digitsOnly
+                  ]
+                : null,
         decoration: InputDecoration(
             isDense: true,
             filled: true,
@@ -85,18 +92,20 @@ class _InputFormState extends State<InputForm> {
   }
 
   Future<void> getDatosDni(String dni) async {
-    setState(() => load = true);
-    String urlApi = "https://api.apis.net.pe/v1/dni?numero=$dni";
-    http.Response response = await http.get(Uri.parse(urlApi));
+    if (keyDni.currentState!.validate()) {
+      setState(() => load = true);
+      String urlApi = "https://api.apis.net.pe/v1/dni?numero=$dni";
+      http.Response response = await http.get(Uri.parse(urlApi));
 
-    if (response.statusCode == 200) {
-      load = false;
-      Map<String, dynamic> jsonData = json.decode(response.body);
-      setState(() => widget.buscarDni!(jsonData['nombres'],
-          '${jsonData['apellidoPaterno']} ${jsonData['apellidoMaterno']}'));
-    } else {
-      load = false;
-      setState(() => widget.buscarDni!('', ''));
+      if (response.statusCode == 200) {
+        load = false;
+        Map<String, dynamic> jsonData = json.decode(response.body);
+        setState(() => widget.buscarDni!(jsonData['nombres'],
+            '${jsonData['apellidoPaterno']} ${jsonData['apellidoMaterno']}'));
+      } else {
+        load = false;
+        setState(() => widget.buscarDni!('', ''));
+      }
     }
   }
 

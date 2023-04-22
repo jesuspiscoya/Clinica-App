@@ -1,4 +1,5 @@
 import 'package:clinica_app/Widgets/navbar_drawer.dart';
+import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/profile_page.dart';
 import 'package:clinica_app/pages/register_page.dart';
 import 'package:clinica_app/pages/search_page.dart';
@@ -8,7 +9,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Enfermera enfermera;
+
+  const HomePage({super.key, required this.enfermera});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -56,7 +59,7 @@ class _HomePageState extends State<HomePage> {
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: Colors.white),
-            child: const Text('Clínica Piscoya')),
+            child: const Text('Juan Pablo II')),
         centerTitle: true,
         titleTextStyle: TextStyle(
             color: Colors.blueAccent.shade400,
@@ -81,9 +84,10 @@ class _HomePageState extends State<HomePage> {
               minWidth: 0,
               shape: const CircleBorder(),
               padding: EdgeInsets.zero,
-              child: CircleAvatar(
+              child: const CircleAvatar(
                   maxRadius: 22,
-                  child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
+                  // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
+                  child: Icon(Icons.person_rounded, size: 30)),
               onPressed: () => true),
           const SizedBox(width: 13)
         ],
@@ -100,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     Text(
-                      '$saludo, Jesus Piscoya',
+                      '$saludo, ${widget.enfermera.nombres} ${widget.enfermera.apellidoPaterno}',
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,

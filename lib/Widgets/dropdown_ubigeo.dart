@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 class DropdownUbigeo extends StatefulWidget {
   final String label;
   String? value;
+  String? valueLabel;
   final Function? selectItem;
   String? departamento;
   String? provincia;
@@ -55,7 +56,8 @@ class _DropdownUbigeoState extends State<DropdownUbigeo> {
                         : widget.label == 'Provincia'
                             ? e['provincia']
                             : e['distrito'],
-                    child: Text('${e['nombre']}')))
+                    child: Text('${e['nombre']}'),
+                    onTap: () => widget.valueLabel = e['nombre']))
                 .toList(),
             onChanged: (value) => setState(() {
               widget.value = value;

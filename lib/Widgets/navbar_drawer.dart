@@ -21,15 +21,16 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
       backgroundColor: const Color(0xFF131935),
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            accountName: const Text('Jesus Piscoya',
+          const UserAccountsDrawerHeader(
+            accountName: Text('Jesus Piscoya',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            accountEmail: const Text('Médico',
+            accountEmail: Text('Médico',
                 style: TextStyle(
                     color: Colors.amber, fontWeight: FontWeight.w600)),
             currentAccountPicture: CircleAvatar(
-                child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
-            decoration: const BoxDecoration(
+                // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
+                child: Icon(Icons.person_rounded, size: 55)),
+            decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.bottomLeft,
                   radius: 2,
