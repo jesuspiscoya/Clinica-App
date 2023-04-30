@@ -59,7 +59,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
           const SizedBox(height: 15),
           itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
           const Expanded(child: SizedBox()),
-          const Divider(thickness: 1.5, color: Colors.white),
+          const Divider(thickness: 0.3, color: Colors.white),
           itemDrawer(Icons.logout_rounded, 'Salir', Colors.red.shade600, 4),
           const SizedBox(height: 5),
         ],

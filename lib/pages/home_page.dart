@@ -1,4 +1,4 @@
-import 'package:clinica_app/Widgets/navbar_drawer.dart';
+import 'package:clinica_app/widgets/navbar_drawer.dart';
 import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/profile_page.dart';
 import 'package:clinica_app/pages/register_page.dart';
@@ -25,6 +25,9 @@ class _HomePageState extends State<HomePage> {
   late final SearchPage searchPage;
   int hora = DateTime.now().hour - 5;
   late String saludo;
+  String dni = '';
+  String nhc = '';
+  String paciente = '';
 
   @override
   void initState() {
@@ -37,8 +40,19 @@ class _HomePageState extends State<HomePage> {
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
     navbarPage = NavbarDrawer(
         enfermera: widget.enfermera,
-        currentIndex: (i) => setState(() => index = i));
-    searchPage = SearchPage(currentIndex: (i) => setState(() => index = i));
+        currentIndex: (i) => setState(() {
+              index = i;
+              dni = '';
+              nhc = '';
+              paciente = '';
+            }));
+    searchPage = SearchPage(
+        currentIndex: (i, dnis, nhcs, pacientes) => setState(() {
+              index = i;
+              dni = dnis;
+              nhc = nhcs;
+              paciente = pacientes;
+            }));
     super.initState();
   }
 
@@ -47,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     final List<Widget> listPages = [
       searchPage,
       const RegisterPage(),
-      const TriagePAge(),
+      TriagePage(dni: dni, nhc: nhc, paciente: paciente),
       const ProfilePage(),
     ];
 

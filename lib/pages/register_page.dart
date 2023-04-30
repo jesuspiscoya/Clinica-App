@@ -1,6 +1,6 @@
-import 'package:clinica_app/Widgets/dropdown_form.dart';
-import 'package:clinica_app/Widgets/input_form.dart';
-import 'package:clinica_app/Widgets/dropdown_ubigeo.dart';
+import 'package:clinica_app/widgets/dropdown_form.dart';
+import 'package:clinica_app/widgets/input_form.dart';
+import 'package:clinica_app/widgets/dropdown_ubigeo.dart';
 import 'package:clinica_app/model/paciente.dart';
 import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +48,12 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         const SizedBox(height: 15),
+        const Text(
+          'Registrar Nuevo Paciente',
+          style: TextStyle(
+              color: Colors.cyan, fontSize: 22, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 15),
         Card(
           elevation: 18,
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -87,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       inputController: telefonoController),
                   const SizedBox(height: 10),
                   InputForm(
-                      label: 'Nacimiento',
+                      label: 'Fecha de Nacimiento',
                       active: true,
                       inputController: fechaController),
                   const SizedBox(height: 10),
@@ -154,10 +160,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void submitRegistrar() {
-    List<String> apellidos = apellidosController.text.split(' ');
-    DateTime fechaInput = DateFormat('dd/MM/yyyy').parse(fechaController.text);
-    String fechaOutput = DateFormat('yyyy/MM/dd').format(fechaInput);
     if (formKeyRegistrar.currentState!.validate()) {
+      List<String> apellidos = apellidosController.text.split(' ');
+      DateTime fechaInput =
+          DateFormat('dd/MM/yyyy').parse(fechaController.text);
+      String fechaOutput = DateFormat('yyyy/MM/dd').format(fechaInput);
       Paciente paciente = Paciente(
           nombres: nombresController.text,
           apellidoPaterno: apellidos[0],

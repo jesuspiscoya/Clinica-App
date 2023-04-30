@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,7 +34,6 @@ class _InputFormState extends State<InputForm> {
     return Flexible(
       child: TextFormField(
         key: widget.label == 'DNI' ? keyDni : null,
-        autofocus: false,
         readOnly: !widget.active,
         enabled: widget.active,
         controller: widget.inputController,
@@ -41,8 +42,15 @@ class _InputFormState extends State<InputForm> {
             : widget.label == 'Presión'
                 ? TextInputAction.send
                 : TextInputAction.next,
-        keyboardType:
-            widget.label == 'DNI' ? TextInputType.number : TextInputType.text,
+        keyboardType: widget.label == 'DNI' ||
+                widget.label == 'Teléfono' ||
+                widget.label == 'Peso' ||
+                widget.label == 'Talla' ||
+                widget.label == 'Temperatura'
+            ? TextInputType.number
+            : widget.label == 'Fecha de Nacimiento' || widget.label == 'Presión'
+                ? TextInputType.datetime
+                : TextInputType.text,
         inputFormatters: widget.label == 'DNI'
             ? [
                 LengthLimitingTextInputFormatter(8),
@@ -74,7 +82,7 @@ class _InputFormState extends State<InputForm> {
                         height: 0,
                         padding: const EdgeInsets.all(10),
                         child: const CircularProgressIndicator())
-                : widget.label == 'Nacimiento'
+                : widget.label == 'Fecha de Nacimiento'
                     ? IconButton(
                         onPressed: () => fechaNacimiento(),
                         icon: const Icon(Icons.date_range_rounded, size: 23))
@@ -93,18 +101,28 @@ class _InputFormState extends State<InputForm> {
 
   Future<void> getDatosDni(String dni) async {
     if (keyDni.currentState!.validate()) {
-      setState(() => load = true);
-      String urlApi = "https://api.apis.net.pe/v1/dni?numero=$dni";
-      http.Response response = await http.get(Uri.parse(urlApi));
+      if (widget.inputController.text.length > 7) {
+        setState(() => load = true);
+        String urlApi = "https://api.apis.net.pe/v1/dni?numero=$dni";
+        http.Response response = await http.get(Uri.parse(urlApi));
 
-      if (response.statusCode == 200) {
+        if (response.statusCode == 200) {
+          Map<String, dynamic> jsonData = json.decode(response.body);
+          setState(() => widget.buscarDni!(jsonData['nombres'],
+              '${jsonData['apellidoPaterno']} ${jsonData['apellidoMaterno']}'));
+        } else {
+          setState(() => widget.buscarDni!('', ''));
+        }
         load = false;
-        Map<String, dynamic> jsonData = json.decode(response.body);
-        setState(() => widget.buscarDni!(jsonData['nombres'],
-            '${jsonData['apellidoPaterno']} ${jsonData['apellidoMaterno']}'));
       } else {
-        load = false;
-        setState(() => widget.buscarDni!('', ''));
+        Fluttertoast.showToast(
+            msg: "Ingrese DNI válido.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.redAccent,
+            textColor: Colors.white,
+            fontSize: 16.0);
       }
     }
   }

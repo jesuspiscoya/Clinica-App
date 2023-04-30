@@ -1,4 +1,4 @@
-import 'package:clinica_app/Widgets/input_form.dart';
+import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +33,13 @@ class _SearchPageState extends State<SearchPage> {
     return Column(
       children: [
         const SizedBox(height: 15),
-        buttonBuscar(),
+        const Text(
+          'Buscar Paciente',
+          style: TextStyle(
+              color: Colors.cyan, fontSize: 22, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 15),
+        inputBuscar(),
         const SizedBox(height: 20),
         Card(
           elevation: 18,
@@ -110,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buttonBuscar() {
+  Widget inputBuscar() {
     return Form(
       key: formKeyBuscar,
       child: SizedBox(
@@ -160,10 +166,11 @@ class _SearchPageState extends State<SearchPage> {
                   shape: const CircleBorder(),
                   child: const Icon(Icons.search_rounded,
                       size: 23, color: Colors.white),
-                  onPressed: () => setState(() => submitBuscar()),
+                  onPressed: () => submitBuscar(),
                 ),
               )),
           onTap: () => setState(() => buscarDni = true),
+          onFieldSubmitted: (value) => submitBuscar(),
           validator: (value) => value!.isEmpty ? 'Ingrese DNI válido.' : null,
         ),
       ),
@@ -188,7 +195,11 @@ class _SearchPageState extends State<SearchPage> {
             borderRadius: BorderRadius.all(Radius.circular(30))),
         child: MaterialButton(
           shape: const StadiumBorder(),
-          onPressed: () => setState(() => widget.currentIndex(2)),
+          onPressed: () => setState(() => widget.currentIndex(
+              2,
+              dniController.text,
+              nhcController.text,
+              '${nombresController.text} ${apellidosController.text}')),
           child: const Text('Realizar Triaje',
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
@@ -199,41 +210,55 @@ class _SearchPageState extends State<SearchPage> {
 
   void submitBuscar() {
     if (formKeyBuscar.currentState!.validate()) {
-      PacienteDao().buscar(dniController.text).then((value) {
-        if (value == null) {
-          buscar = false;
-          limpiar();
-          Fluttertoast.showToast(
-              msg: "Paciente no registrado.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.redAccent,
-              textColor: Colors.white,
-              fontSize: 16.0);
-        } else {
-          buscar = true;
-          buscarDni = false;
-          nhcController.text = value['nhc'];
-          nombresController.text = value['nombres'];
-          apellidosController.text =
-              '${value['ape_paterno']} ${value['ape_materno']}';
-          DateTime fechaInput =
-              DateFormat('dd-MM-yyyy').parse(value['fec_nacimiento']);
-          fechaController.text = DateFormat('dd/MM/yyyy').format(fechaInput);
-          edadController.text = '${DateTime.now().year - fechaInput.year}';
-          sexoController.text = value['sexo'];
-          estadoController.text = value['est_civil'];
-          sangreController.text = value['tip_sangre'];
-          donacionController.text = value['don_organos'];
-          // dniController.clear();
-          FocusScope.of(context).unfocus();
-        }
-      });
+      if (dniController.text.length > 7) {
+        PacienteDao().buscar(dniController.text).then((value) {
+          setState(() {
+            if (value == null) {
+              buscar = false;
+              limpiar();
+              Fluttertoast.showToast(
+                  msg: "Paciente no registrado.",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.redAccent,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              buscar = true;
+              buscarDni = false;
+              nhcController.text = value['nhc'];
+              nombresController.text = value['nombres'];
+              apellidosController.text =
+                  '${value['ape_paterno']} ${value['ape_materno']}';
+              DateTime fechaInput =
+                  DateFormat('dd-MM-yyyy').parse(value['fec_nacimiento']);
+              fechaController.text =
+                  DateFormat('dd/MM/yyyy').format(fechaInput);
+              edadController.text = '${DateTime.now().year - fechaInput.year}';
+              sexoController.text = value['sexo'];
+              estadoController.text = value['est_civil'];
+              sangreController.text = value['tip_sangre'];
+              donacionController.text = value['don_organos'];
+              FocusScope.of(context).unfocus();
+            }
+          });
+        });
+      } else {
+        Fluttertoast.showToast(
+            msg: "Ingrese DNI válido.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.redAccent,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     }
   }
 
   void limpiar() {
+    nhcController.clear();
     nombresController.clear();
     apellidosController.clear();
     fechaController.clear();

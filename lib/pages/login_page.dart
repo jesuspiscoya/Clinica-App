@@ -138,6 +138,8 @@ class _LoginPageState extends State<LoginPage> {
         focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(width: 1.5, color: Colors.cyan)),
       ),
+      onFieldSubmitted: (value) =>
+          label == 'Contraseña' ? submitIngresar() : null,
       validator: (value) =>
           value!.isEmpty ? '${label.toLowerCase()} inválido.' : null,
     );
