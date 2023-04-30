@@ -1,15 +1,18 @@
 import 'package:clinica_app/model/enfermera.dart';
+import 'package:clinica_app/model/medico.dart';
 import 'package:clinica_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class NavbarDrawer extends StatefulWidget {
   int index = 0;
-  final Enfermera enfermera;
+  final Enfermera? enfermera;
+  final Medico? medico;
   final Function currentIndex;
 
   NavbarDrawer({
     super.key,
-    required this.enfermera,
+    this.enfermera,
+    this.medico,
     required this.currentIndex,
   });
 
@@ -26,11 +29,14 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(
-                '${widget.enfermera.nombres} ${widget.enfermera.apellidoPaterno}',
+                widget.enfermera != null
+                    ? '${widget.enfermera!.nombres} ${widget.enfermera!.apellidoPaterno}'
+                    : '${widget.medico!.nombres} ${widget.medico!.apellidoPaterno}',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            accountEmail: const Text('Personal de Salud',
-                style: TextStyle(
+            accountEmail: Text(
+                widget.enfermera != null ? 'Personal de Salud' : 'Médico',
+                style: const TextStyle(
                     color: Colors.amber, fontWeight: FontWeight.w600)),
             currentAccountPicture: const CircleAvatar(
                 // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
@@ -48,14 +54,23 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                     BorderRadius.vertical(bottom: Radius.circular(30))),
           ),
           const SizedBox(height: 10),
-          itemDrawer(
-              Icons.person_search_rounded, 'Buscar Paciente', Colors.white, 0),
+          widget.enfermera != null
+              ? itemDrawer(Icons.person_search_rounded, 'Buscar Paciente',
+                  Colors.white, 0)
+              : itemDrawer(
+                  Icons.pending_actions_rounded, 'Pendientes', Colors.white, 0),
           const SizedBox(height: 15),
-          itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
-              Colors.white, 1),
+          widget.enfermera != null
+              ? itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
+                  Colors.white, 1)
+              : itemDrawer(
+                  Icons.task_rounded, 'Registrar Atención', Colors.white, 1),
           const SizedBox(height: 15),
-          itemDrawer(
-              Icons.monitor_heart_rounded, 'Registrar Triaje', Colors.white, 2),
+          widget.enfermera != null
+              ? itemDrawer(Icons.monitor_heart_rounded, 'Registrar Triaje',
+                  Colors.white, 2)
+              : itemDrawer(
+                  Icons.checklist_rounded, 'Historial', Colors.white, 2),
           const SizedBox(height: 15),
           itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
           const Expanded(child: SizedBox()),

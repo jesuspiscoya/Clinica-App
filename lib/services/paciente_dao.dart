@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 class PacienteDao {
   static const String host = '192.168.100.134';
+
   Future<dynamic> registrar(Paciente paciente) async {
     var response = await http.post(
         Uri.parse("http://$host/api_clinica/registrar_paciente.php"),

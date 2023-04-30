@@ -12,4 +12,5 @@ if ($row = $resultado->fetch_assoc()) {
 } else {
     echo json_encode($row);
 }
+$conexion->close();
 ?>

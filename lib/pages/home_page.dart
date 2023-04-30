@@ -1,3 +1,7 @@
+import 'package:clinica_app/model/medico.dart';
+import 'package:clinica_app/pages/atencion_page.dart';
+import 'package:clinica_app/pages/historial_page.dart';
+import 'package:clinica_app/pages/pendientes_page.dart';
 import 'package:clinica_app/widgets/navbar_drawer.dart';
 import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/profile_page.dart';
@@ -9,9 +13,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  final Enfermera enfermera;
+  final Enfermera? enfermera;
+  final Medico? medico;
 
-  const HomePage({super.key, required this.enfermera});
+  const HomePage({super.key, this.enfermera, this.medico});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -40,6 +45,7 @@ class _HomePageState extends State<HomePage> {
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
     navbarPage = NavbarDrawer(
         enfermera: widget.enfermera,
+        medico: widget.medico,
         currentIndex: (i) => setState(() {
               index = i;
               dni = '';
@@ -59,9 +65,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> listPages = [
-      searchPage,
-      const RegisterPage(),
-      TriagePage(dni: dni, nhc: nhc, paciente: paciente),
+      widget.enfermera != null ? searchPage : const PendientesPage(),
+      widget.enfermera != null ? const RegisterPage() : const AtencionPage(),
+      widget.enfermera != null
+          ? TriagePage(dni: dni, nhc: nhc, paciente: paciente)
+          : const HistorialPage(),
       const ProfilePage(),
     ];
 
@@ -126,7 +134,9 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     Text(
-                      '$saludo, ${widget.enfermera.nombres} ${widget.enfermera.apellidoPaterno}',
+                      widget.enfermera != null
+                          ? '$saludo, ${widget.enfermera!.nombres} ${widget.enfermera!.apellidoPaterno}'
+                          : '$saludo, ${widget.medico!.nombres} ${widget.medico!.apellidoPaterno}',
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,

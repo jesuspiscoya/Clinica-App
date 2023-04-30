@@ -12,4 +12,5 @@ try {
 } catch (\Throwable $th) {
     echo json_encode(false);
 }
+$conexion->close();
 ?>
