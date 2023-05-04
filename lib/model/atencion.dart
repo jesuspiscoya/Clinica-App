@@ -1,18 +1,18 @@
-class Triaje {
-  final String codEnfermera;
+class Atencion {
+  final int? codigo;
   final String codPaciente;
-  final String peso;
-  final String talla;
-  final String temperatura;
-  final String presion;
+  final String codEspecialidad;
+  final String codEnfermera;
+  final bool? estado;
+  final DateTime? fecha;
 
-  Triaje({
-    required this.codEnfermera,
+  Atencion({
+    this.codigo,
     required this.codPaciente,
-    required this.peso,
-    required this.talla,
-    required this.temperatura,
-    required this.presion,
+    required this.codEspecialidad,
+    required this.codEnfermera,
+    this.estado,
+    this.fecha,
   });
 
   // Triaje.fromLogin(Map<String, dynamic> item)

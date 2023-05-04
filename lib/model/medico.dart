@@ -1,5 +1,6 @@
 class Medico {
-  final int? codigo;
+  final int codigo;
+  final String especialidad;
   final String nombres;
   final String apellidoPaterno;
   final String apellidoMaterno;
@@ -21,7 +22,8 @@ class Medico {
   late String? password;
 
   Medico({
-    this.codigo,
+    required this.codigo,
+    required this.especialidad,
     required this.nombres,
     required this.apellidoPaterno,
     required this.apellidoMaterno,
@@ -29,6 +31,7 @@ class Medico {
 
   Medico.fromLogin(Map<String, dynamic> item)
       : codigo = int.parse(item['cod_medico']),
+        especialidad = item['nom_especialidad'],
         nombres = item['nombres'],
         apellidoPaterno = item['ape_paterno'],
         apellidoMaterno = item['ape_materno'];

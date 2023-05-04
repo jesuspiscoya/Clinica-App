@@ -10,12 +10,19 @@ class TriajeDao {
     var response = await http.post(
         Uri.parse("http://$host/api_clinica/registrar_triaje.php"),
         body: {
-          'dni': triaje.dni,
+          'cod_enfermera': triaje.codEnfermera,
+          'cod_paciente': triaje.codPaciente,
           'peso': triaje.peso,
           'talla': triaje.talla,
           'temperatura': triaje.temperatura,
           'presion': triaje.presion,
         });
+    return json.decode(response.body);
+  }
+
+  Future<List<dynamic>> listarPendientes() async {
+    var response = await http
+        .post(Uri.parse("http://$host/api_clinica/listar_triajes.php"));
     return json.decode(response.body);
   }
 

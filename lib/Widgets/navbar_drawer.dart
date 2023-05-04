@@ -35,7 +35,9 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             accountEmail: Text(
-                widget.enfermera != null ? 'Personal de Salud' : 'Médico',
+                widget.enfermera != null
+                    ? 'Personal de Salud'
+                    : 'Médico ${widget.medico!.especialidad}',
                 style: const TextStyle(
                     color: Colors.amber, fontWeight: FontWeight.w600)),
             currentAccountPicture: const CircleAvatar(
@@ -55,7 +57,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
           ),
           const SizedBox(height: 10),
           widget.enfermera != null
-              ? itemDrawer(Icons.person_search_rounded, 'Buscar Paciente',
+              ? itemDrawer(Icons.person_search_rounded, 'Nueva Atención',
                   Colors.white, 0)
               : itemDrawer(
                   Icons.pending_actions_rounded, 'Pendientes', Colors.white, 0),
@@ -64,14 +66,15 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
               ? itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
                   Colors.white, 1)
               : itemDrawer(
-                  Icons.task_rounded, 'Registrar Atención', Colors.white, 1),
+                  Icons.checklist_rounded, 'Historial', Colors.white, 1),
           const SizedBox(height: 15),
           widget.enfermera != null
               ? itemDrawer(Icons.monitor_heart_rounded, 'Registrar Triaje',
                   Colors.white, 2)
-              : itemDrawer(
-                  Icons.checklist_rounded, 'Historial', Colors.white, 2),
-          const SizedBox(height: 15),
+              : const SizedBox(),
+          widget.enfermera != null
+              ? const SizedBox(height: 15)
+              : const SizedBox(),
           itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
           const Expanded(child: SizedBox()),
           const Divider(thickness: 0.3, color: Colors.white),

@@ -78,28 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 45),
                     inputForm('Contraseña', passwordController),
                     const SizedBox(height: 40),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 55,
-                      decoration: const BoxDecoration(
-                        gradient: RadialGradient(
-                          center: Alignment.bottomLeft,
-                          radius: 4,
-                          colors: <Color>[
-                            Color(0xFF4284DB),
-                            Color(0xFF29EAC4),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: MaterialButton(
-                          child: const Text('Ingresar',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700)),
-                          onPressed: () => submitIngresar()),
-                    ),
+                    buttonIngresar()
                   ],
                 ),
               ),
@@ -143,6 +122,31 @@ class _LoginPageState extends State<LoginPage> {
           label == 'Contraseña' ? submitIngresar() : null,
       validator: (value) =>
           value!.isEmpty ? '${label.toLowerCase()} inválido.' : null,
+    );
+  }
+
+  Widget buttonIngresar() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 55,
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment.bottomLeft,
+          radius: 4,
+          colors: <Color>[
+            Color(0xFF4284DB),
+            Color(0xFF29EAC4),
+          ],
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+      ),
+      child: MaterialButton(
+          child: const Text('Ingresar',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700)),
+          onPressed: () => submitIngresar()),
     );
   }
 

@@ -6,7 +6,6 @@ import 'package:clinica_app/widgets/navbar_drawer.dart';
 import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/profile_page.dart';
 import 'package:clinica_app/pages/register_page.dart';
-import 'package:clinica_app/pages/search_page.dart';
 import 'package:clinica_app/pages/triage_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,12 +26,10 @@ class _HomePageState extends State<HomePage> {
       DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now());
   int index = 0;
   late final NavbarDrawer navbarPage;
-  late final SearchPage searchPage;
+  late final AtencionPage atencionPage;
   int hora = DateTime.now().hour - 5;
   late String saludo;
-  String dni = '';
-  String nhc = '';
-  String paciente = '';
+  String dni = '', nhc = '', paciente = '';
 
   @override
   void initState() {
@@ -52,7 +49,8 @@ class _HomePageState extends State<HomePage> {
               nhc = '';
               paciente = '';
             }));
-    searchPage = SearchPage(
+    atencionPage = AtencionPage(
+        codEnfermera: widget.enfermera != null ? widget.enfermera!.codigo : '',
         currentIndex: (i, dnis, nhcs, pacientes) => setState(() {
               index = i;
               dni = dnis;
@@ -65,11 +63,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> listPages = [
-      widget.enfermera != null ? searchPage : const PendientesPage(),
-      widget.enfermera != null ? const RegisterPage() : const AtencionPage(),
-      widget.enfermera != null
-          ? TriagePage(dni: dni, nhc: nhc, paciente: paciente)
-          : const HistorialPage(),
+      widget.enfermera != null ? atencionPage : const PendientesPage(),
+      widget.enfermera != null ? const RegisterPage() : const HistorialPage(),
+      widget.enfermera != null ? const TriagePage() : const SizedBox(),
       const ProfilePage(),
     ];
 
@@ -104,10 +100,7 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.zero,
                     child: const Icon(Icons.sort_rounded,
                         color: Colors.white, size: 33),
-                    onPressed: () {
-                      // FocusScope.of(context).unfocus();
-                      Scaffold.of(context).openDrawer();
-                    }))),
+                    onPressed: () => Scaffold.of(context).openDrawer()))),
         leadingWidth: 55,
         actions: [
           MaterialButton(

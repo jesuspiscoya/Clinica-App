@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,7 +33,6 @@ class _InputFormState extends State<InputForm> {
     return Flexible(
       child: TextFormField(
         key: widget.label == 'DNI' ? keyDni : null,
-        readOnly: !widget.active,
         enabled: widget.active,
         controller: widget.inputController,
         textInputAction: widget.label == 'DNI'

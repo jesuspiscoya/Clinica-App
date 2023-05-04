@@ -1,5 +1,5 @@
 class Enfermera {
-  final int? codigo;
+  final String codigo;
   final String nombres;
   final String apellidoPaterno;
   final String apellidoMaterno;
@@ -21,14 +21,14 @@ class Enfermera {
   late String? password;
 
   Enfermera({
-    this.codigo,
+    required this.codigo,
     required this.nombres,
     required this.apellidoPaterno,
     required this.apellidoMaterno,
   });
 
   Enfermera.fromLogin(Map<String, dynamic> item)
-      : codigo = int.parse(item['cod_enfermera']),
+      : codigo = item['cod_enfermera'],
         nombres = item['nombres'],
         apellidoPaterno = item['ape_paterno'],
         apellidoMaterno = item['ape_materno'];

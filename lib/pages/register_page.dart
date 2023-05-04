@@ -30,18 +30,20 @@ class _RegisterPageState extends State<RegisterPage> {
   late DropdownUbigeo dropdownDistrito = DropdownUbigeo(label: 'Distrito');
   late DropdownUbigeo dropdownProvincia = DropdownUbigeo(label: 'Provincia');
   late DropdownUbigeo dropdownDepartamento = DropdownUbigeo(
-      label: 'Departamento',
-      selectItem: (departamento) =>
-          setState(() => dropdownProvincia = DropdownUbigeo(
-                label: 'Provincia',
-                departamento: departamento,
-                selectItem: (provincia) =>
-                    setState(() => dropdownDistrito = DropdownUbigeo(
-                          label: 'Distrito',
-                          departamento: departamento,
-                          provincia: provincia,
-                        )),
-              )));
+    label: 'Departamento',
+    selectItem: (departamento) => setState(
+      () => dropdownProvincia = DropdownUbigeo(
+        label: 'Provincia',
+        departamento: departamento,
+        selectItem: (provincia) => setState(
+          () => dropdownDistrito = DropdownUbigeo(
+              label: 'Distrito',
+              departamento: departamento,
+              provincia: provincia),
+        ),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -184,24 +186,10 @@ class _RegisterPageState extends State<RegisterPage> {
       PacienteDao().registrar(paciente).then((value) {
         if (value) {
           limpiar();
-          Fluttertoast.showToast(
-              msg: "Paciente registrado con éxito.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          showToast('Paciente registrado con éxito.', Colors.green);
           FocusScope.of(context).unfocus();
         } else {
-          Fluttertoast.showToast(
-              msg: "Error al registrar paciente.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          showToast('Error al registrar paciente.', Colors.red);
           FocusScope.of(context).unfocus();
         }
       });
@@ -232,5 +220,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         label: 'Distrito',
                         departamento: departamento,
                         provincia: provincia)))));
+  }
+
+  void showToast(String msg, Color color) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: color,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }
