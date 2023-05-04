@@ -1,5 +1,5 @@
 class Medico {
-  final int codigo;
+  final String codigo;
   final String especialidad;
   final String nombres;
   final String apellidoPaterno;
@@ -30,7 +30,7 @@ class Medico {
   });
 
   Medico.fromLogin(Map<String, dynamic> item)
-      : codigo = int.parse(item['cod_medico']),
+      : codigo = item['cod_medico'],
         especialidad = item['nom_especialidad'],
         nombres = item['nombres'],
         apellidoPaterno = item['ape_paterno'],

@@ -1,4 +1,6 @@
 import 'package:clinica_app/model/atencion.dart';
+import 'package:clinica_app/model/especialidad.dart';
+import 'package:clinica_app/model/paciente.dart';
 import 'package:clinica_app/services/atencion_dao.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/services/paciente_dao.dart';
@@ -33,10 +35,9 @@ class _AtencionPageState extends State<AtencionPage> {
   TextEditingController estadoController = TextEditingController();
   TextEditingController sangreController = TextEditingController();
   TextEditingController donacionController = TextEditingController();
-  bool buscar = false, buscarDni = false;
   String? especialidad;
   late String codPaciente;
-  List<dynamic> itemsEspecialidad = <dynamic>[];
+  late List<Especialidad> itemsEspecialidad = <Especialidad>[];
 
   @override
   void initState() {
@@ -193,7 +194,6 @@ class _AtencionPageState extends State<AtencionPage> {
                   onPressed: () => submitBuscar(),
                 ),
               )),
-          onTap: () => setState(() => buscarDni = true),
           onFieldSubmitted: (value) => submitBuscar(),
           validator: (value) => value!.isEmpty ? 'Ingrese DNI válido.' : null,
         ),
@@ -207,25 +207,23 @@ class _AtencionPageState extends State<AtencionPage> {
         PacienteDao().buscar(dniController.text).then((value) {
           setState(() {
             if (value == null) {
-              buscar = false;
               limpiar();
               showToast('Paciente no registrado.', Colors.red);
             } else {
-              buscar = true;
-              buscarDni = false;
-              codPaciente = value['cod_paciente'];
-              nhcController.text = value['nhc'];
+              value as Paciente;
+              codPaciente = value.codigo!;
+              nhcController.text = value.nhc;
               pacienteController.text =
-                  '${value['nombres']} ${value['ape_paterno']} ${value['ape_materno']}';
+                  '${value.nombres} ${value.paterno} ${value.materno}';
               DateTime fechaInput =
-                  DateFormat('dd-MM-yyyy').parse(value['fec_nacimiento']);
+                  DateFormat('dd-MM-yyyy').parse(value.nacimiento);
               fechaController.text =
                   DateFormat('dd/MM/yyyy').format(fechaInput);
               edadController.text = '${DateTime.now().year - fechaInput.year}';
-              sexoController.text = value['sexo'];
-              estadoController.text = value['est_civil'];
-              sangreController.text = value['tip_sangre'];
-              donacionController.text = value['don_organos'];
+              sexoController.text = value.sexo;
+              estadoController.text = value.estadoCivil;
+              sangreController.text = value.sangre;
+              donacionController.text = value.donacion;
               FocusScope.of(context).unfocus();
             }
           });
@@ -248,9 +246,8 @@ class _AtencionPageState extends State<AtencionPage> {
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.all(Radius.circular(10)))),
       items: itemsEspecialidad
-          .map((e) => DropdownMenuItem<String>(
-              value: e['cod_especialidad'],
-              child: Text('${e['nom_especialidad']}')))
+          .map((e) =>
+              DropdownMenuItem<String>(value: e.codigo, child: Text(e.nombre)))
           .toList(),
       onChanged: (value) => setState(() => especialidad = value!),
       validator: (value) => value == null ? 'Seleccione especialidad.' : null,
@@ -289,7 +286,6 @@ class _AtencionPageState extends State<AtencionPage> {
         if (value) {
           limpiar();
           showToast('Atención registrada con éxito.', Colors.green);
-          FocusScope.of(context).unfocus();
         } else {
           showToast('Atención registrada con éxito.', Colors.red);
           FocusScope.of(context).unfocus();
@@ -336,6 +332,7 @@ class _AtencionPageState extends State<AtencionPage> {
     estadoController.clear();
     sangreController.clear();
     donacionController.clear();
+    FocusScope.of(context).unfocus();
   }
 
   void showToast(String msg, Color color) {

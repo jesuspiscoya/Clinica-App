@@ -1,10 +1,11 @@
+import 'package:clinica_app/model/atencion.dart';
 import 'package:clinica_app/widgets/alertdialog_lista.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ListviewBuild extends StatelessWidget {
   final bool medico;
-  final Future<List<dynamic>> future;
+  final Future<List<Atencion>> future;
 
   const ListviewBuild({
     super.key,
@@ -20,13 +21,12 @@ class ListviewBuild extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 8),
                 FutureBuilder(
                   future: future,
                   builder: (context, snapshot) {
@@ -42,52 +42,51 @@ class ListviewBuild extends StatelessWidget {
                             key: UniqueKey(),
                             shrinkWrap: true,
                             initialItemCount: snapshot.data!.length,
-                            itemBuilder: (context, index, animation) =>
-                                SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(-1, 0),
-                                end: const Offset(0, 0),
-                              ).animate(CurvedAnimation(
-                                  parent: animation, curve: Curves.bounceOut)),
-                              child: GestureDetector(
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment(0, 5),
-                                      colors: <Color>[
-                                        Color(0xFF4284DB),
-                                        Color(0xFF29EAC4),
-                                      ],
+                            itemBuilder: (context, index, animation) {
+                              Atencion atencion =
+                                  snapshot.data!.elementAt(index);
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(-1, 0),
+                                  end: const Offset(0, 0),
+                                ).animate(CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.bounceOut)),
+                                child: GestureDetector(
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 10),
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment(0, 5),
+                                        colors: <Color>[
+                                          Color(0xFF4284DB),
+                                          Color(0xFF29EAC4),
+                                        ],
+                                      ),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(12)),
                                     ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
+                                    child: listaCard(atencion),
                                   ),
-                                  child: listaCard(
-                                      snapshot.data!.elementAt(index)),
+                                  onTap: () => !medico
+                                      ? showDialog(
+                                          context: context,
+                                          builder: (context) => AlertdialogLista(
+                                              codigoEnfermera:
+                                                  atencion.codEnfermera,
+                                              codigoPaciente:
+                                                  atencion.codPaciente,
+                                              dni: atencion.dni,
+                                              nhc: atencion.nhc,
+                                              paciente:
+                                                  '${atencion.nombres} ${atencion.paterno} ${atencion.materno}'),
+                                        )
+                                      : null,
                                 ),
-                                onTap: () => !medico
-                                    ? showDialog(
-                                        context: context,
-                                        builder: (context) => AlertdialogLista(
-                                            codigoEnfermera: snapshot.data!
-                                                .elementAt(
-                                                    index)['cod_enfermera'],
-                                            codigoPaciente: snapshot.data!
-                                                .elementAt(
-                                                    index)['cod_paciente'],
-                                            dni: snapshot.data!
-                                                .elementAt(index)['dni'],
-                                            nhc: snapshot.data!
-                                                .elementAt(index)['nhc'],
-                                            paciente:
-                                                '${snapshot.data!.elementAt(index)['nombres']} ${snapshot.data!.elementAt(index)['ape_paterno']} ${snapshot.data!.elementAt(index)['ape_materno']}'),
-                                      )
-                                    : null,
-                              ),
-                            ),
+                              );
+                            },
                           )
                         : Center(
                             child: Text('Sin pacientes pendientes.',
@@ -99,16 +98,14 @@ class ListviewBuild extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 13)
+          const SizedBox(height: 10)
         ],
       ),
     );
   }
 
-  Widget listaCard(dynamic paciente) {
-    List<String> nombres = paciente['nombres'].split(' ');
-    DateTime fechaInput =
-        DateFormat('yyyy-MM-dd hh:mm').parse(paciente['fec_registro']);
+  Widget listaCard(Atencion atencion) {
+    List<String> nombres = atencion.nombres.split(' ');
 
     return Row(
       children: [
@@ -117,10 +114,10 @@ class ListviewBuild extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(paciente['dni'],
+              Text(atencion.dni,
                   style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w600)),
-              Text('${nombres[0]} ${paciente['ape_paterno']}',
+              Text('${nombres[0]} ${atencion.paterno}',
                   style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w600))
             ],
@@ -129,12 +126,12 @@ class ListviewBuild extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(DateFormat('dd/MM/yyyy').format(fechaInput),
+            Text(DateFormat('dd/MM/yyyy').format(atencion.fecha),
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w600)),
-            Text(DateFormat('hh:mm a').format(fechaInput),
+            Text(DateFormat('hh:mm a').format(atencion.fecha),
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,

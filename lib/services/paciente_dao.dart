@@ -6,26 +6,10 @@ import 'package:http/http.dart' as http;
 class PacienteDao {
   static const String host = '192.168.100.134';
 
-  Future<dynamic> registrar(Paciente paciente) async {
+  Future<bool> registrar(Paciente paciente) async {
     var response = await http.post(
         Uri.parse("http://$host/api_clinica/registrar_paciente.php"),
-        body: {
-          'nombre': paciente.nombres,
-          'paterno': paciente.apellidoPaterno,
-          'materno': paciente.apellidoMaterno,
-          'dni': paciente.dni,
-          'telefono': paciente.telefono,
-          'nacimiento': paciente.fechaNacimiento,
-          'sexo': paciente.sexo,
-          'civil': paciente.estadoCivil,
-          'departamento': paciente.departamento,
-          'provincia': paciente.provincia,
-          'distrito': paciente.distrito,
-          'direccion': paciente.direccion,
-          'nhc': paciente.nhc.toString(),
-          'sangre': paciente.tipoSangre,
-          'organos': paciente.donacionOrganos,
-        });
+        body: paciente.toMap());
     return json.decode(response.body);
   }
 
@@ -33,6 +17,8 @@ class PacienteDao {
     var response = await http.post(
         Uri.parse("http://$host/api_clinica/buscar_paciente.php"),
         body: {'dni': dni});
-    return json.decode(response.body);
+    return json.decode(response.body) != null
+        ? Paciente.fromMap(json.decode(response.body) as Map<String, dynamic>)
+        : json.decode(response.body);
   }
 }

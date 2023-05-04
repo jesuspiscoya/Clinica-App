@@ -33,10 +33,10 @@ class Enfermera {
         apellidoPaterno = item['ape_paterno'],
         apellidoMaterno = item['ape_materno'];
 
-  // Map<String, Object?> toMap() {
+  // Map<String, Object?> toLogin() {
   //   return {
-  //     'cod_art': codigo,
-  //     'nombre': nombre,
+  //     'usuario': user,
+  //     'password': pass,
   //   };
   // }
 }

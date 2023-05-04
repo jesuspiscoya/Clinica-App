@@ -5,7 +5,7 @@ $obj = new Conexion;
 $conexion = $obj->getConexion();
 
 $sql = "CALL LoginMedico('" . $_POST['usuario'] . "','" . sha1($_POST['password']) . "')";
-$resultado = mysqli_query($conexion, $sql);
+$resultado = $conexion->query($sql);
 
 if ($row = $resultado->fetch_assoc()) {
     echo json_encode($row, JSON_UNESCAPED_UNICODE);

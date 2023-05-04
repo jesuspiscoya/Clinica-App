@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
                 timeInSecForIosWeb: 1,
-                backgroundColor: Colors.redAccent,
+                backgroundColor: Colors.red,
                 textColor: Colors.white,
                 fontSize: 16.0);
           } else {

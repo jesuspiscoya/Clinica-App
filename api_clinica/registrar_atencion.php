@@ -4,7 +4,7 @@ require 'conexion.php';
 $obj = new Conexion;
 $conexion = $obj->getConexion();
 
-$sql = "CALL RegistrarTriaje('" . $_POST['cod_enfermera'] . "','" . $_POST['cod_paciente'] . "','" . $_POST['peso'] . "','" . $_POST['talla'] . "','" . $_POST['temperatura'] . "','" . $_POST['presion'] . "')";
+$sql = "CALL RegistrarAtencion('" . $_POST['cod_paciente'] . "','" . $_POST['cod_especialidad'] . "','" . $_POST['cod_enfermera'] . "')";
 
 try {
     $conexion->query($sql);

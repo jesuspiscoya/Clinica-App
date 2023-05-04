@@ -169,25 +169,24 @@ class _RegisterPageState extends State<RegisterPage> {
       String fechaOutput = DateFormat('yyyy/MM/dd').format(fechaInput);
       Paciente paciente = Paciente(
           nombres: nombresController.text,
-          apellidoPaterno: apellidos[0],
-          apellidoMaterno: apellidos[1],
+          paterno: apellidos[0],
+          materno: apellidos[1],
           dni: dniController.text,
           telefono: telefonoController.text,
-          fechaNacimiento: fechaOutput,
+          nacimiento: fechaOutput,
           sexo: dropdownSexo.value!,
           estadoCivil: dropdownEstado.value!,
           departamento: dropdownDepartamento.valueLabel!,
           provincia: dropdownProvincia.valueLabel!,
           distrito: dropdownDistrito.valueLabel!,
           direccion: direccionController.text,
-          nhc: 0,
-          tipoSangre: dropdownTipo.value!,
-          donacionOrganos: dropdownDonacion.value!);
+          nhc: '10000',
+          sangre: dropdownTipo.value!,
+          donacion: dropdownDonacion.value!);
       PacienteDao().registrar(paciente).then((value) {
         if (value) {
           limpiar();
           showToast('Paciente registrado con éxito.', Colors.green);
-          FocusScope.of(context).unfocus();
         } else {
           showToast('Error al registrar paciente.', Colors.red);
           FocusScope.of(context).unfocus();
@@ -220,6 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         label: 'Distrito',
                         departamento: departamento,
                         provincia: provincia)))));
+    FocusScope.of(context).unfocus();
   }
 
   void showToast(String msg, Color color) {

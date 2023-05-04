@@ -1,29 +1,29 @@
 class Paciente {
-  final int? codigo;
+  final String? codigo;
   final String nombres;
-  final String apellidoPaterno;
-  final String apellidoMaterno;
-  final String dni;
-  final String telefono;
-  final String fechaNacimiento;
+  final String paterno;
+  final String materno;
+  late final String dni;
+  late final String telefono;
+  final String nacimiento;
   final String sexo;
   final String estadoCivil;
-  final String departamento;
-  final String provincia;
-  final String distrito;
-  final String direccion;
-  final int nhc;
-  final String tipoSangre;
-  final String donacionOrganos;
+  late final String departamento;
+  late final String provincia;
+  late final String distrito;
+  late final String direccion;
+  final String nhc;
+  final String sangre;
+  final String donacion;
 
   Paciente({
     this.codigo,
     required this.nombres,
-    required this.apellidoPaterno,
-    required this.apellidoMaterno,
+    required this.paterno,
+    required this.materno,
     required this.dni,
     required this.telefono,
-    required this.fechaNacimiento,
+    required this.nacimiento,
     required this.sexo,
     required this.estadoCivil,
     required this.departamento,
@@ -31,32 +31,39 @@ class Paciente {
     required this.distrito,
     required this.direccion,
     required this.nhc,
-    required this.tipoSangre,
-    required this.donacionOrganos,
+    required this.sangre,
+    required this.donacion,
   });
 
-  Paciente.fromLogin(Map<String, dynamic> item)
-      : codigo = int.parse(item['cod_paciente']),
+  Paciente.fromMap(Map<String, dynamic> item)
+      : codigo = item['cod_paciente'],
+        nhc = item['nhc'],
         nombres = item['nombres'],
-        apellidoPaterno = item['ape_paterno'],
-        apellidoMaterno = item['ape_materno'],
-        dni = item['dni'],
-        telefono = item['telefono'],
-        fechaNacimiento = item['fec_nacimiento'],
+        paterno = item['ape_paterno'],
+        materno = item['ape_materno'],
+        nacimiento = item['fec_nacimiento'],
         sexo = item['sexo'],
         estadoCivil = item['est_civil'],
-        departamento = item['departamento'],
-        provincia = item['provincia'],
-        distrito = item['distrito'],
-        direccion = item['direccion'],
-        nhc = int.parse(item['nhc']),
-        tipoSangre = item['tip_sangre'],
-        donacionOrganos = item['don_organos'];
+        sangre = item['tip_sangre'],
+        donacion = item['don_organos'];
 
-  // Map<String, Object?> toMap() {
-  //   return {
-  //     'cod_art': codigo,
-  //     'nombre': nombre,
-  //   };
-  // }
+  Map<String, Object?> toMap() {
+    return {
+      'nombre': nombres,
+      'paterno': paterno,
+      'materno': materno,
+      'dni': dni,
+      'telefono': telefono,
+      'nacimiento': nacimiento,
+      'sexo': sexo,
+      'civil': estadoCivil,
+      'departamento': departamento,
+      'provincia': provincia,
+      'distrito': distrito,
+      'direccion': direccion,
+      'nhc': nhc,
+      'sangre': sangre,
+      'organos': donacion,
+    };
+  }
 }

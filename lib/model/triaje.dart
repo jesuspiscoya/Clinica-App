@@ -21,10 +21,14 @@ class Triaje {
   //       apellidoPaterno = item['ape_paterno'],
   //       apellidoMaterno = item['ape_materno'];
 
-  // Map<String, Object?> toMap() {
-  //   return {
-  //     'cod_art': codigo,
-  //     'nombre': nombre,
-  //   };
-  // }
+  Map<String, Object?> toMap() {
+    return {
+      'cod_enfermera': codEnfermera,
+      'cod_paciente': codPaciente,
+      'peso': peso,
+      'talla': talla,
+      'temperatura': temperatura,
+      'presion': presion,
+    };
+  }
 }

@@ -1,30 +1,45 @@
+import 'package:intl/intl.dart';
+
 class Atencion {
-  final int? codigo;
   final String codPaciente;
-  final String codEspecialidad;
-  final String codEnfermera;
-  final bool? estado;
-  final DateTime? fecha;
+  late final String codEspecialidad;
+  late final String codEnfermera;
+  late final DateTime fecha;
+  late final String nhc;
+  late final String dni;
+  late final String nombres;
+  late final String paterno;
+  late final String materno;
 
   Atencion({
-    this.codigo,
     required this.codPaciente,
     required this.codEspecialidad,
     required this.codEnfermera,
-    this.estado,
-    this.fecha,
   });
 
-  // Triaje.fromLogin(Map<String, dynamic> item)
-  //     : codigo = int.parse(item['cod_enfermera']),
-  //       nombres = item['nombres'],
-  //       apellidoPaterno = item['ape_paterno'],
-  //       apellidoMaterno = item['ape_materno'];
+  Atencion.fromTriaje(Map<String, dynamic> item)
+      : codPaciente = item['cod_paciente'],
+        codEnfermera = item['cod_enfermera'],
+        nhc = item['nhc'],
+        dni = item['dni'],
+        nombres = item['nombres'],
+        paterno = item['ape_paterno'],
+        materno = item['ape_materno'],
+        fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
 
-  // Map<String, Object?> toMap() {
-  //   return {
-  //     'cod_art': codigo,
-  //     'nombre': nombre,
-  //   };
-  // }
+  Atencion.fromPendiente(Map<String, dynamic> item)
+      : codPaciente = item['cod_paciente'],
+        dni = item['dni'],
+        nombres = item['nombres'],
+        paterno = item['ape_paterno'],
+        materno = item['ape_materno'],
+        fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
+
+  Map<String, Object?> toMap() {
+    return {
+      'cod_paciente': codPaciente,
+      'cod_especialidad': codEspecialidad,
+      'cod_enfermera': codEnfermera,
+    };
+  }
 }
