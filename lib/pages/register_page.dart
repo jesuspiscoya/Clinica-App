@@ -15,7 +15,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool buscar = false, buscarDni = false;
   GlobalKey<FormState> formKeyRegistrar = GlobalKey<FormState>();
   TextEditingController dniController = TextEditingController();
   TextEditingController nombresController = TextEditingController();

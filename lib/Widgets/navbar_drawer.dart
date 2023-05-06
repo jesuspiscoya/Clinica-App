@@ -125,7 +125,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                   Navigator.of(context).pop();
                 })
               : Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()));
+                  MaterialPageRoute(builder: (context) => LoginPage()));
         },
       ),
     );

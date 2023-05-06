@@ -263,45 +263,20 @@ class _AtencionPageState extends State<AtencionPage> {
     }
   }
 
-  // Widget buttonTriaje() {
-  //   return AnimatedSize(
-  //     duration: const Duration(milliseconds: 300),
-  //     child: Container(
-  //       height: buscar ? 45 : 0,
-  //       margin: const EdgeInsets.only(top: 10),
-  //       decoration: const BoxDecoration(
-  //           gradient: RadialGradient(
-  //             center: Alignment.bottomLeft,
-  //             radius: 3,
-  //             colors: <Color>[
-  //               Color.fromARGB(255, 108, 200, 236),
-  //               Color.fromARGB(255, 35, 102, 189),
-  //             ],
-  //           ),
-  //           borderRadius: BorderRadius.all(Radius.circular(30))),
-  //       child: MaterialButton(
-  //         shape: const StadiumBorder(),
-  //         onPressed: () => submitRegistrar(),
-  //         child: const Text('Registrar Atención',
-  //             style:
-  //                 TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void limpiar() {
-    dniController.clear();
-    dropdownEspecialidad = DropdownForm(label: 'Especialidad');
-    nhcController.clear();
-    pacienteController.clear();
-    fechaController.clear();
-    edadController.clear();
-    sexoController.clear();
-    estadoController.clear();
-    sangreController.clear();
-    donacionController.clear();
-    FocusScope.of(context).unfocus();
+    setState(() {
+      dniController.clear();
+      dropdownEspecialidad = DropdownForm(label: 'Especialidad');
+      nhcController.clear();
+      pacienteController.clear();
+      fechaController.clear();
+      edadController.clear();
+      sexoController.clear();
+      estadoController.clear();
+      sangreController.clear();
+      donacionController.clear();
+      FocusScope.of(context).unfocus();
+    });
   }
 
   void showToast(String msg, Color color) {

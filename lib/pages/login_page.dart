@@ -6,17 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController usuarioController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController usuarioController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final Widget svgIcon = SvgPicture.asset('assets/image.svg',
       colorFilter: const ColorFilter.mode(Colors.greenAccent, BlendMode.srcIn));
   final Widget svgIcon2 = SvgPicture.asset('assets/image.svg',
@@ -74,11 +69,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    inputForm('Usuario', usuarioController),
+                    inputForm('Usuario', usuarioController, context),
                     const SizedBox(height: 45),
-                    inputForm('Contraseña', passwordController),
+                    inputForm('Contraseña', passwordController, context),
                     const SizedBox(height: 40),
-                    buttonIngresar()
+                    buttonIngresar(context)
                   ],
                 ),
               ),
@@ -89,7 +84,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget inputForm(String label, TextEditingController controller) {
+  Widget inputForm(
+      String label, TextEditingController controller, BuildContext context) {
     return TextFormField(
       cursorHeight: 22,
       controller: controller,
@@ -119,13 +115,13 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: BorderSide(width: 1.5, color: Colors.cyan)),
       ),
       onFieldSubmitted: (value) =>
-          label == 'Contraseña' ? submitIngresar() : null,
+          label == 'Contraseña' ? submitIngresar(context) : null,
       validator: (value) =>
           value!.isEmpty ? '${label.toLowerCase()} inválido.' : null,
     );
   }
 
-  Widget buttonIngresar() {
+  Widget buttonIngresar(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 55,
@@ -146,11 +142,11 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.w700)),
-          onPressed: () => submitIngresar()),
+          onPressed: () => submitIngresar(context)),
     );
   }
 
-  void submitIngresar() {
+  void submitIngresar(BuildContext context) {
     LoginDao()
         .loginEnfermera(usuarioController.text, passwordController.text)
         .then((value) {
