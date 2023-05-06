@@ -3,16 +3,23 @@ import 'package:clinica_app/widgets/alertdialog_lista.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ListviewBuild extends StatelessWidget {
+class ListviewBuild extends StatefulWidget {
   final bool medico;
   final Future<List<Atencion>> future;
+  final Function? selectPendiente;
 
   const ListviewBuild({
     super.key,
     required this.medico,
     required this.future,
+    this.selectPendiente,
   });
 
+  @override
+  State<ListviewBuild> createState() => _ListviewBuildState();
+}
+
+class _ListviewBuildState extends State<ListviewBuild> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -28,7 +35,7 @@ class ListviewBuild extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 FutureBuilder(
-                  future: future,
+                  future: widget.future,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -70,7 +77,7 @@ class ListviewBuild extends StatelessWidget {
                                     ),
                                     child: listaCard(atencion),
                                   ),
-                                  onTap: () => !medico
+                                  onTap: () => !widget.medico
                                       ? showDialog(
                                           context: context,
                                           builder: (context) => AlertdialogLista(
@@ -83,7 +90,13 @@ class ListviewBuild extends StatelessWidget {
                                               paciente:
                                                   '${atencion.nombres} ${atencion.paterno} ${atencion.materno}'),
                                         )
-                                      : null,
+                                      : setState(() {
+                                          widget.selectPendiente!(
+                                              true,
+                                              '${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
+                                              atencion.dni,
+                                              atencion.codPaciente);
+                                        }),
                                 ),
                               );
                             },

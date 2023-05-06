@@ -88,12 +88,12 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
                             Row(
                               children: [
                                 InputForm(
-                                    label: 'Peso',
+                                    label: 'Peso (Kg)',
                                     active: true,
                                     inputController: pesoController),
                                 const SizedBox(width: 8),
                                 InputForm(
-                                    label: 'Talla',
+                                    label: 'Talla (cm)',
                                     active: true,
                                     inputController: tallaController)
                               ],
@@ -102,12 +102,12 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
                             Row(
                               children: [
                                 InputForm(
-                                    label: 'Temperatura',
+                                    label: 'Temperatura (°C)',
                                     active: true,
                                     inputController: temperaturaController),
                                 const SizedBox(width: 8),
                                 InputForm(
-                                    label: 'Presión',
+                                    label: 'Presión Arterial (mmHg)',
                                     active: true,
                                     inputController: presionController)
                               ],

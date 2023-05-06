@@ -27,17 +27,17 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
   late final NavbarDrawer navbarPage;
   late final AtencionPage atencionPage;
-  int hora = DateTime.now().hour - 5;
+  int hora = DateTime.now().hour;
   late String saludo;
   String dni = '', nhc = '', paciente = '';
 
   @override
   void initState() {
-    hora < 5 || hora > 18
-        ? saludo = 'Buenas Noches'
-        : hora > 4 || hora < 12
-            ? saludo = 'Buenas Días'
-            : 'Buenas Tardes';
+    hora > 4 && hora < 12
+        ? saludo = 'Buenas Días'
+        : hora > 11 && hora < 19
+            ? saludo = 'Buenas Tardes'
+            : saludo = 'Buenas Noches';
     initializeDateFormatting('es-PE', '').then((value) =>
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
     navbarPage = NavbarDrawer(
@@ -50,13 +50,7 @@ class _HomePageState extends State<HomePage> {
               paciente = '';
             }));
     atencionPage = AtencionPage(
-        codEnfermera: widget.enfermera != null ? widget.enfermera!.codigo : '',
-        currentIndex: (i, dnis, nhcs, pacientes) => setState(() {
-              index = i;
-              dni = dnis;
-              nhc = nhcs;
-              paciente = pacientes;
-            }));
+        codEnfermera: widget.enfermera != null ? widget.enfermera!.codigo : '');
     super.initState();
   }
 
@@ -109,8 +103,9 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.zero,
               child: const CircleAvatar(
                   maxRadius: 22,
+                  backgroundColor: Colors.transparent,
                   // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
-                  child: Icon(Icons.person_rounded, size: 30)),
+                  child: Icon(Icons.person_rounded, size: 35)),
               onPressed: () => true),
           const SizedBox(width: 13)
         ],

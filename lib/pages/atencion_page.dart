@@ -1,7 +1,8 @@
 import 'package:clinica_app/model/atencion.dart';
-import 'package:clinica_app/model/especialidad.dart';
 import 'package:clinica_app/model/paciente.dart';
 import 'package:clinica_app/services/atencion_dao.dart';
+import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/widgets/dropdown_form.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/services/paciente_dao.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +12,10 @@ import 'package:intl/intl.dart';
 
 class AtencionPage extends StatefulWidget {
   final String codEnfermera;
-  final Function currentIndex;
 
   const AtencionPage({
     super.key,
     required this.codEnfermera,
-    required this.currentIndex,
   });
 
   @override
@@ -35,22 +34,8 @@ class _AtencionPageState extends State<AtencionPage> {
   TextEditingController estadoController = TextEditingController();
   TextEditingController sangreController = TextEditingController();
   TextEditingController donacionController = TextEditingController();
-  String? especialidad;
+  DropdownForm dropdownEspecialidad = DropdownForm(label: 'Especialidad');
   late String codPaciente;
-  late List<Especialidad> itemsEspecialidad = <Especialidad>[];
-
-  @override
-  void initState() {
-    super.initState();
-    getItems();
-  }
-
-  void getItems() async {
-    final data = await AtencionDao().listarEspecialidad();
-    setState(() {
-      itemsEspecialidad = data;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +62,7 @@ class _AtencionPageState extends State<AtencionPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  dropdownEspecialidad(),
+                  dropdownEspecialidad,
                   const SizedBox(height: 10),
                   InputForm(
                       label: 'NHC',
@@ -194,7 +179,7 @@ class _AtencionPageState extends State<AtencionPage> {
                   onPressed: () => submitBuscar(),
                 ),
               )),
-          onFieldSubmitted: (value) => submitBuscar(),
+          onFieldSubmitted: (value) => setState(() => submitBuscar()),
           validator: (value) => value!.isEmpty ? 'Ingrese DNI válido.' : null,
         ),
       ),
@@ -205,53 +190,30 @@ class _AtencionPageState extends State<AtencionPage> {
     if (formKeyBuscar.currentState!.validate()) {
       if (dniController.text.length > 7) {
         PacienteDao().buscar(dniController.text).then((value) {
-          setState(() {
-            if (value == null) {
-              limpiar();
-              showToast('Paciente no registrado.', Colors.red);
-            } else {
-              value as Paciente;
-              codPaciente = value.codigo!;
-              nhcController.text = value.nhc;
-              pacienteController.text =
-                  '${value.nombres} ${value.paterno} ${value.materno}';
-              DateTime fechaInput =
-                  DateFormat('dd-MM-yyyy').parse(value.nacimiento);
-              fechaController.text =
-                  DateFormat('dd/MM/yyyy').format(fechaInput);
-              edadController.text = '${DateTime.now().year - fechaInput.year}';
-              sexoController.text = value.sexo;
-              estadoController.text = value.estadoCivil;
-              sangreController.text = value.sangre;
-              donacionController.text = value.donacion;
-              FocusScope.of(context).unfocus();
-            }
-          });
+          if (value == null) {
+            limpiar();
+            showToast('Paciente no registrado.', Colors.red);
+          } else {
+            value as Paciente;
+            codPaciente = value.codigo!;
+            nhcController.text = value.nhc;
+            pacienteController.text =
+                '${value.nombres} ${value.paterno} ${value.materno}';
+            DateTime fechaInput =
+                DateFormat('dd-MM-yyyy').parse(value.nacimiento);
+            fechaController.text = DateFormat('dd/MM/yyyy').format(fechaInput);
+            edadController.text = '${DateTime.now().year - fechaInput.year}';
+            sexoController.text = value.sexo;
+            estadoController.text = value.estadoCivil;
+            sangreController.text = value.sangre;
+            donacionController.text = value.donacion;
+            FocusScope.of(context).unfocus();
+          }
         });
       } else {
         showToast('Ingrese DNI válido.', Colors.red);
       }
     }
-  }
-
-  Widget dropdownEspecialidad() {
-    return DropdownButtonFormField<String>(
-      decoration: const InputDecoration(
-          isDense: true,
-          filled: true,
-          fillColor: Colors.black12,
-          labelText: 'Especialidad',
-          labelStyle: TextStyle(height: 1.7, fontSize: 15),
-          border: UnderlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.all(Radius.circular(10)))),
-      items: itemsEspecialidad
-          .map((e) =>
-              DropdownMenuItem<String>(value: e.codigo, child: Text(e.nombre)))
-          .toList(),
-      onChanged: (value) => setState(() => especialidad = value!),
-      validator: (value) => value == null ? 'Seleccione especialidad.' : null,
-    );
   }
 
   Widget buttonRegistrar() {
@@ -269,7 +231,7 @@ class _AtencionPageState extends State<AtencionPage> {
           borderRadius: BorderRadius.all(Radius.circular(30))),
       child: MaterialButton(
         shape: const StadiumBorder(),
-        onPressed: () => submitRegistrar(),
+        onPressed: () => setState(() => submitRegistrar()),
         child: const Text('Registrar Atención',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
@@ -278,17 +240,24 @@ class _AtencionPageState extends State<AtencionPage> {
 
   void submitRegistrar() {
     if (formKeyRegistrar.currentState!.validate()) {
-      Atencion atencion = Atencion(
-          codPaciente: codPaciente,
-          codEspecialidad: especialidad!,
-          codEnfermera: widget.codEnfermera);
-      AtencionDao().registrar(atencion).then((value) {
+      TriajeDao().verificarTriaje(codPaciente).then((value) {
         if (value) {
-          limpiar();
-          showToast('Atención registrada con éxito.', Colors.green);
+          Atencion atencion = Atencion(
+              codPaciente: codPaciente,
+              codEspecialidad: dropdownEspecialidad.value!,
+              codEnfermera: widget.codEnfermera);
+          AtencionDao().registrar(atencion).then((value) {
+            if (value) {
+              limpiar();
+              showToast('Atención registrada con éxito.', Colors.green);
+            } else {
+              showToast('Atención registrada con éxito.', Colors.red);
+              FocusScope.of(context).unfocus();
+            }
+          });
         } else {
-          showToast('Atención registrada con éxito.', Colors.red);
-          FocusScope.of(context).unfocus();
+          showToast(
+              'Paciente pendiente a triaje.', Colors.amberAccent.shade700);
         }
       });
     }
@@ -323,7 +292,7 @@ class _AtencionPageState extends State<AtencionPage> {
 
   void limpiar() {
     dniController.clear();
-    especialidad = null;
+    dropdownEspecialidad = DropdownForm(label: 'Especialidad');
     nhcController.clear();
     pacienteController.clear();
     fechaController.clear();

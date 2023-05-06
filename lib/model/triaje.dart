@@ -1,6 +1,6 @@
 class Triaje {
-  final String codEnfermera;
-  final String codPaciente;
+  late final String codEnfermera;
+  late final String codPaciente;
   final String peso;
   final String talla;
   final String temperatura;
@@ -15,11 +15,11 @@ class Triaje {
     required this.presion,
   });
 
-  // Triaje.fromLogin(Map<String, dynamic> item)
-  //     : codigo = int.parse(item['cod_enfermera']),
-  //       nombres = item['nombres'],
-  //       apellidoPaterno = item['ape_paterno'],
-  //       apellidoMaterno = item['ape_materno'];
+  Triaje.fromMap(Map<String, dynamic> item)
+      : peso = item['peso'],
+        talla = item['talla'],
+        temperatura = item['temperatura'],
+        presion = item['presion'];
 
   Map<String, Object?> toMap() {
     return {
