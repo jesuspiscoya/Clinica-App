@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:clinica_app/services/atencion_dao.dart';
+import 'package:clinica_app/model/atencion.dart';
 import 'package:clinica_app/services/triaje_dao.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
@@ -14,6 +14,7 @@ class PendientesPage extends StatefulWidget {
 
 class _PendientesPageState extends State<PendientesPage> {
   GlobalKey<FormState> formKeyRegistrar = GlobalKey<FormState>();
+  TextEditingController buscarController = TextEditingController();
   TextEditingController motivoController = TextEditingController();
   TextEditingController sintomasController = TextEditingController();
   TextEditingController diagnosticoController = TextEditingController();
@@ -21,11 +22,12 @@ class _PendientesPageState extends State<PendientesPage> {
   TextEditingController observacionesController = TextEditingController();
   TextEditingController examenesController = TextEditingController();
   bool selected = false;
-  late String codPaciente, paciente, dni;
+  late Atencion atencion;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 15),
         const Text('Atenciones Pendientes',
@@ -35,19 +37,15 @@ class _PendientesPageState extends State<PendientesPage> {
         !selected
             ? ListviewBuild(
                 medico: true,
-                future: AtencionDao().listarPendientes(),
-                selectPendiente: (selected, paciente, dni, codPaciente) =>
-                    setState(() {
+                selectPendiente: (selected, atencion) => setState(() {
                       this.selected = selected;
-                      this.paciente = paciente;
-                      this.dni = dni;
-                      this.codPaciente = codPaciente;
+                      this.atencion = atencion;
                     }))
             : SlideInRight(
                 duration: const Duration(milliseconds: 250),
                 from: MediaQuery.of(context).size.width,
                 child: FutureBuilder(
-                  future: TriajeDao().buscarTriaje(codPaciente),
+                  future: TriajeDao().buscarTriaje(atencion.codPaciente),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -73,7 +71,7 @@ class _PendientesPageState extends State<PendientesPage> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  'Paciente:  $paciente',
+                                  'Paciente: ${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -81,7 +79,7 @@ class _PendientesPageState extends State<PendientesPage> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  'DNI:  $dni',
+                                  'DNI:  ${atencion.dni}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w600),
                                 ),

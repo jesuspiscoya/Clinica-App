@@ -27,9 +27,7 @@ class _DropdownFormState extends State<DropdownForm> {
 
   void getItems() async {
     final data = await AtencionDao().listarEspecialidad();
-    setState(() {
-      itemsEspecialidad = data;
-    });
+    setState(() => itemsEspecialidad = data);
   }
 
   @override
