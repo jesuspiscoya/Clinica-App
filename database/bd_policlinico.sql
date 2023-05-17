@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-05-2023 a las 00:04:32
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 8.2.0
+-- Tiempo de generación: 17-05-2023 a las 23:24:52
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,12 +33,12 @@ ON pa.cod_persona = pe.cod_persona
 WHERE pe.dni = dni;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarTriaje` (IN `cod_pacientes` INT)   BEGIN
-SELECT * FROM triaje WHERE cod_paciente = cod_pacientes ORDER BY fec_registro DESC LIMIT 1;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarTriaje` (IN `cod_triajes` INT)   BEGIN
+SELECT * FROM triaje WHERE cod_triaje = cod_triajes;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarAtencionesPendientes` ()   BEGIN
-SELECT pa.cod_paciente, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
+SELECT a.cod_atencion, a.cod_paciente, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
 FROM atencion a
 INNER JOIN paciente pa
 INNER JOIN persona pe
@@ -51,7 +51,7 @@ SELECT * FROM especialidad;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarTriajePendiente` ()   BEGIN
-SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
+SELECT a.cod_atencion, pa.cod_paciente, a.cod_enfermera, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro
 FROM atencion a
 INNER JOIN paciente pa
 INNER JOIN persona pe
@@ -76,8 +76,13 @@ ON m.cod_persona = p.cod_persona AND m.cod_especialidad = e.cod_especialidad
 WHERE m.usuario = user AND m.password = pass;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ModificarAtencion` (IN `codigo` INT, IN `cod_medicos` INT, IN `motivos` VARCHAR(200), IN `sintomass` VARCHAR(200), IN `diagnosticos` VARCHAR(200), IN `tratamientos` VARCHAR(200), IN `observacioness` VARCHAR(200), IN `exameness` VARCHAR(200))   BEGIN
+UPDATE atencion SET cod_medico = cod_medicos, motivo = motivos, sintomas = sintomass, diagnostico = diagnosticos, tratamiento = tratamientos, observaciones = observacioness, examenes = exameness, estado = 2, fec_modificacion = null
+WHERE cod_atencion = codigo;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarAtencion` (IN `cod_paciente` INT, IN `cod_especialidad` INT, IN `cod_enfermera` INT)   BEGIN
-INSERT INTO atencion VALUES(null, cod_paciente, cod_especialidad, cod_enfermera, 0, null);
+INSERT INTO atencion VALUES(null, cod_paciente, cod_especialidad, cod_enfermera, null, '', '', '', '', '', '', 0, null, null);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
@@ -96,9 +101,10 @@ INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimi
 INSERT INTO paciente VALUES(null, nhc, (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1), sangre, organos);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarTriaje` (IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarTriaje` (IN `cod_atencions` INT, IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
 INSERT INTO triaje VALUES(null, cod_enfermera, cod_pacientes, peso, talla, temperatura, presion, null);
-UPDATE atencion SET estado = 1 WHERE cod_paciente = cod_pacientes;
+SET @cod_triaje = (SELECT cod_triaje FROM triaje WHERE cod_paciente = cod_pacientes ORDER BY cod_triaje DESC LIMIT 1);
+UPDATE atencion SET cod_triaje = @cod_triaje, estado = 1 WHERE cod_atencion = cod_atencions;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `VerificarTriaje` (IN `cod_pacientes` INT)   SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
@@ -121,19 +127,29 @@ CREATE TABLE `atencion` (
   `cod_paciente` int(11) NOT NULL,
   `cod_especialidad` int(11) NOT NULL,
   `cod_enfermera` int(11) NOT NULL,
+  `cod_triaje` int(11) DEFAULT NULL,
+  `cod_medico` int(11) DEFAULT NULL,
+  `motivo` varchar(200) DEFAULT NULL,
+  `sintomas` varchar(200) DEFAULT NULL,
+  `diagnostico` varchar(200) DEFAULT NULL,
+  `tratamiento` varchar(200) DEFAULT NULL,
+  `observaciones` varchar(200) DEFAULT NULL,
+  `examenes` varchar(200) DEFAULT NULL,
   `estado` tinyint(1) NOT NULL,
-  `fec_registro` timestamp NOT NULL DEFAULT current_timestamp()
+  `fec_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fec_modificacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `atencion`
 --
 
-INSERT INTO `atencion` (`cod_atencion`, `cod_paciente`, `cod_especialidad`, `cod_enfermera`, `estado`, `fec_registro`) VALUES
-(1, 1000, 1001, 1000, 1, '2023-05-03 07:12:19'),
-(3, 1002, 1000, 1000, 1, '2023-05-03 07:25:22'),
-(9, 1000, 1000, 1001, 0, '2023-05-06 05:52:48'),
-(10, 1002, 1000, 1001, 0, '2023-05-06 05:53:11');
+INSERT INTO `atencion` (`cod_atencion`, `cod_paciente`, `cod_especialidad`, `cod_enfermera`, `cod_triaje`, `cod_medico`, `motivo`, `sintomas`, `diagnostico`, `tratamiento`, `observaciones`, `examenes`, `estado`, `fec_registro`, `fec_modificacion`) VALUES
+(1, 1000, 1001, 1000, 2, 1000, '', '', '', '', '', '', 1, '2023-05-03 07:12:19', '2023-05-17 19:28:56'),
+(2, 1002, 1000, 1000, 3, 1000, '', '', '', '', '', '', 1, '2023-05-03 07:25:22', '2023-05-17 19:14:35'),
+(3, 1000, 1000, 1001, NULL, NULL, '', '', '', '', '', '', 0, '2023-05-06 05:52:48', '2023-05-17 19:14:35'),
+(4, 1002, 1000, 1001, NULL, NULL, '', '', '', '', '', '', 0, '2023-05-06 05:53:11', '2023-05-17 19:14:35'),
+(5, 1003, 1000, 1000, 22, 1000, '', '', '', '', '', '', 1, '2023-05-17 19:18:18', '2023-05-17 19:28:15');
 
 -- --------------------------------------------------------
 
@@ -181,19 +197,6 @@ INSERT INTO `especialidad` (`cod_especialidad`, `nom_especialidad`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `historia_clinica`
---
-
-CREATE TABLE `historia_clinica` (
-  `nhc` int(11) NOT NULL,
-  `alergias` varchar(100) NOT NULL,
-  `antecedentes` varchar(100) NOT NULL,
-  `diagnostico` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `medico`
 --
 
@@ -235,7 +238,8 @@ CREATE TABLE `paciente` (
 INSERT INTO `paciente` (`cod_paciente`, `nhc`, `cod_persona`, `tip_sangre`, `don_organos`) VALUES
 (1000, 10054, 1005, 'O+', 'Sí'),
 (1001, 10055, 1006, 'AB+', 'No'),
-(1002, 0, 1007, 'AB+', 'No');
+(1002, 0, 1007, 'AB+', 'No'),
+(1003, 10000, 1009, 'B-', 'No');
 
 -- --------------------------------------------------------
 
@@ -265,12 +269,13 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`cod_persona`, `nombres`, `ape_paterno`, `ape_materno`, `dni`, `telefono`, `fec_nacimiento`, `sexo`, `est_civil`, `departamento`, `provincia`, `distrito`, `direccion`, `fec_registro`) VALUES
-(1003, 'Jesus', 'Piscoya', 'Bances', '74644014', '910029102', '2001-05-03', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-22 01:06:07'),
-(1004, 'Maria', 'Mendoza', 'Lopez', '08452140', '998563214', '1998-05-12', 'Femenino', 'Casada', 'Lima', 'Lima', 'Independencia', 'Av. Independencia 456', '2023-04-22 05:07:14'),
-(1005, 'VIOLETA', 'BANCES', 'VARGAS', '08618610', '985632145', '1989-08-15', 'Femenino', 'Casado', 'Cusco', 'Paruro', 'Accha', 'Av. Lima 123', '2023-04-22 06:19:03'),
-(1006, 'ADRIAN MATHIAS', 'GAMARRA', 'HUAYMACARI', '78456454', '986523145', '1991-04-11', 'Masculino', 'Casado', 'Lima', 'Lima', 'Carabayllo', 'Luna Pizarro 123', '2023-04-22 06:48:49'),
-(1007, 'JESUS RAFAEL', 'PISCOYA', 'BANCES', '74644014', '985550510', '2023-04-20', 'Masculino', 'Casado', 'Ica', 'Chincha', 'El Carmen', 'available direction 2', '2023-04-29 18:03:11'),
-(1008, 'Oscar', 'Piscoya', 'Bances', '08618450', '998541236', '0000-00-00', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-30 17:47:22');
+(1000, 'Jesus', 'Piscoya', 'Bances', '74644014', '910029102', '2001-05-03', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-22 01:06:07'),
+(1001, 'Maria', 'Mendoza', 'Lopez', '08452140', '998563214', '1998-05-12', 'Femenino', 'Casada', 'Lima', 'Lima', 'Independencia', 'Av. Independencia 456', '2023-04-22 05:07:14'),
+(1002, 'VIOLETA', 'BANCES', 'VARGAS', '08618610', '985632145', '1989-08-15', 'Femenino', 'Casado', 'Cusco', 'Paruro', 'Accha', 'Av. Lima 123', '2023-04-22 06:19:03'),
+(1003, 'ADRIAN MATHIAS', 'GAMARRA', 'HUAYMACARI', '78456454', '986523145', '1991-04-11', 'Masculino', 'Casado', 'Lima', 'Lima', 'Carabayllo', 'Luna Pizarro 123', '2023-04-22 06:48:49'),
+(1004, 'JESUS RAFAEL', 'PISCOYA', 'BANCES', '74644014', '985550510', '2023-04-20', 'Masculino', 'Casado', 'Ica', 'Chincha', 'El Carmen', 'available direction 2', '2023-04-29 18:03:11'),
+(1005, 'Oscar', 'Piscoya', 'Bances', '08618450', '998541236', '0000-00-00', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-30 17:47:22'),
+(1006, 'ALFONSO', 'PISCOYA', 'SANCHEZ', '09896111', '990502865', '1991-05-10', 'Masculino', 'Casado', 'Lima', 'Lima', 'Carabayllo', 'av. direccion 123', '2023-05-17 15:18:14');
 
 -- --------------------------------------------------------
 
@@ -294,9 +299,9 @@ CREATE TABLE `triaje` (
 --
 
 INSERT INTO `triaje` (`cod_triaje`, `cod_enfermera`, `cod_paciente`, `peso`, `talla`, `temperatura`, `presion`, `fec_registro`) VALUES
-(2, 1000, 1000, 58.5, 160, 37, '120/80', '2023-05-04 05:26:10'),
-(3, 1000, 1002, 60, 160, 37, '120/80', '2023-05-04 05:28:59'),
-(4, 1000, 1002, 58, 152, 36.5, '120/80', '2023-05-06 03:37:50');
+(1, 1000, 1000, 58.5, 160, 37, '120/80', '2023-05-04 05:26:10'),
+(2, 1000, 1002, 60, 160, 37, '120/80', '2023-05-04 05:28:59'),
+(3, 1000, 1003, 65, 160, 37, '120/80', '2023-05-17 21:01:57');
 
 --
 -- Índices para tablas volcadas
@@ -309,7 +314,9 @@ ALTER TABLE `atencion`
   ADD PRIMARY KEY (`cod_atencion`),
   ADD KEY `cod_paciente` (`cod_paciente`),
   ADD KEY `cod_especialidad` (`cod_especialidad`),
-  ADD KEY `cod_enfermera` (`cod_enfermera`);
+  ADD KEY `cod_enfermera` (`cod_enfermera`),
+  ADD KEY `cod_triaje` (`cod_triaje`),
+  ADD KEY `cod_medico` (`cod_medico`);
 
 --
 -- Indices de la tabla `enfermera`
@@ -323,12 +330,6 @@ ALTER TABLE `enfermera`
 --
 ALTER TABLE `especialidad`
   ADD PRIMARY KEY (`cod_especialidad`);
-
---
--- Indices de la tabla `historia_clinica`
---
-ALTER TABLE `historia_clinica`
-  ADD PRIMARY KEY (`nhc`);
 
 --
 -- Indices de la tabla `medico`
@@ -367,7 +368,7 @@ ALTER TABLE `triaje`
 -- AUTO_INCREMENT de la tabla `atencion`
 --
 ALTER TABLE `atencion`
-  MODIFY `cod_atencion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `cod_atencion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `enfermera`
@@ -382,12 +383,6 @@ ALTER TABLE `especialidad`
   MODIFY `cod_especialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1003;
 
 --
--- AUTO_INCREMENT de la tabla `historia_clinica`
---
-ALTER TABLE `historia_clinica`
-  MODIFY `nhc` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `medico`
 --
 ALTER TABLE `medico`
@@ -397,19 +392,19 @@ ALTER TABLE `medico`
 -- AUTO_INCREMENT de la tabla `paciente`
 --
 ALTER TABLE `paciente`
-  MODIFY `cod_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1003;
+  MODIFY `cod_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1004;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `cod_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1009;
+  MODIFY `cod_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1007;
 
 --
 -- AUTO_INCREMENT de la tabla `triaje`
 --
 ALTER TABLE `triaje`
-  MODIFY `cod_triaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `cod_triaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
@@ -421,7 +416,9 @@ ALTER TABLE `triaje`
 ALTER TABLE `atencion`
   ADD CONSTRAINT `atencion_ibfk_1` FOREIGN KEY (`cod_paciente`) REFERENCES `paciente` (`cod_paciente`),
   ADD CONSTRAINT `atencion_ibfk_3` FOREIGN KEY (`cod_especialidad`) REFERENCES `especialidad` (`cod_especialidad`),
-  ADD CONSTRAINT `atencion_ibfk_4` FOREIGN KEY (`cod_enfermera`) REFERENCES `enfermera` (`cod_enfermera`);
+  ADD CONSTRAINT `atencion_ibfk_4` FOREIGN KEY (`cod_enfermera`) REFERENCES `enfermera` (`cod_enfermera`),
+  ADD CONSTRAINT `atencion_ibfk_5` FOREIGN KEY (`cod_triaje`) REFERENCES `triaje` (`cod_triaje`),
+  ADD CONSTRAINT `atencion_ibfk_6` FOREIGN KEY (`cod_medico`) REFERENCES `medico` (`cod_medico`);
 
 --
 -- Filtros para la tabla `enfermera`

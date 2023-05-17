@@ -9,14 +9,23 @@ class AtencionDao {
 
   Future<bool> registrar(Atencion atencion) async {
     var response = await http.post(
-        Uri.parse("http://$host/api_clinica/registrar_atencion.php"),
-        body: atencion.toMap());
+        Uri.parse('http://$host/api_clinica/registrar_atencion.php'),
+        body: atencion.toRegistrar());
+    return json.decode(response.body);
+  }
+
+  Future<bool> modificar(Atencion atencion) async {
+    print(atencion.toModificar());
+    var response = await http.post(
+        Uri.parse('http://$host/api_clinica/modificar_atencion.php'),
+        body: atencion.toModificar());
+    print(response.body);
     return json.decode(response.body);
   }
 
   Future<List<Especialidad>> listarEspecialidad() async {
     var response = await http
-        .post(Uri.parse("http://$host/api_clinica/listar_especialidad.php"));
+        .post(Uri.parse('http://$host/api_clinica/listar_especialidad.php'));
     return (json.decode(response.body) as List)
         .map((e) => Especialidad.fromMap(e))
         .toList();
@@ -24,7 +33,7 @@ class AtencionDao {
 
   Future<List<Atencion>> listarPendientes() async {
     var response = await http
-        .post(Uri.parse("http://$host/api_clinica/listar_pendientes.php"));
+        .post(Uri.parse('http://$host/api_clinica/listar_pendientes.php'));
     return (json.decode(response.body) as List)
         .map((e) => Atencion.fromPendiente(e))
         .toList();

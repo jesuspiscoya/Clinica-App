@@ -29,7 +29,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
   }
 
   void getPendientes() async {
-    final data = !widget.medico
+    final data = widget.medico
         ? await AtencionDao().listarPendientes()
         : await TriajeDao().listarPendientes();
     setState(() {
@@ -57,35 +57,39 @@ class _ListviewBuildState extends State<ListviewBuild> {
                     itemBuilder: (context, index) {
                       Atencion atencion = listaPendientes.elementAt(index);
                       return GestureDetector(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 5),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment(0, 5),
-                              colors: <Color>[
-                                Color(0xFF4284DB),
-                                Color(0xFF29EAC4),
-                              ],
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 5),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment(0, 5),
+                                colors: <Color>[
+                                  Color(0xFF4284DB),
+                                  Color(0xFF29EAC4),
+                                ],
+                              ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12)),
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            child: listaCard(atencion),
                           ),
-                          child: listaCard(atencion),
-                        ),
-                        onTap: () => !widget.medico
-                            ? showDialog(
-                                context: context,
-                                builder: (context) => AlertdialogLista(
-                                    codigoEnfermera: atencion.codEnfermera,
-                                    codigoPaciente: atencion.codPaciente,
-                                    dni: atencion.dni,
-                                    nhc: atencion.nhc,
-                                    paciente:
-                                        '${atencion.nombres} ${atencion.paterno} ${atencion.materno}'),
-                              )
-                            : setState(
-                                () => widget.selectPendiente!(true, atencion)),
-                      );
+                          onTap: () => !widget.medico
+                              ? showDialog(
+                                  context: context,
+                                  builder: (context) => AlertdialogLista(
+                                      codigoAtencion: atencion.codigo!,
+                                      codigoEnfermera: atencion.codEnfermera!,
+                                      codigoPaciente: atencion.codPaciente!,
+                                      dni: atencion.dni,
+                                      nhc: atencion.nhc,
+                                      paciente:
+                                          '${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
+                                      selectPendiente: () => TriajeDao()
+                                          .listarPendientes()
+                                          .then((value) => setState(
+                                              () => listaPendientes = value))))
+                              : setState(
+                                  () => widget.selectPendiente!(atencion)));
                     },
                   )
                 : Center(
@@ -146,7 +150,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
           isDense: true,
           filled: true,
           fillColor: Colors.black12,
-          labelText: 'Buscar paciente',
+          labelText: 'Buscar por DNI',
           labelStyle: TextStyle(height: 1.5, fontSize: 15),
           contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           prefixIcon: Icon(Icons.search_rounded, size: 30),

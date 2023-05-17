@@ -6,15 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AlertdialogLista extends StatefulWidget {
-  final String codigoEnfermera, codigoPaciente, dni, nhc, paciente;
+  final String codigoAtencion,
+      codigoEnfermera,
+      codigoPaciente,
+      dni,
+      nhc,
+      paciente;
+  final Function selectPendiente;
 
   const AlertdialogLista({
     super.key,
+    required this.codigoAtencion,
     required this.codigoEnfermera,
     required this.codigoPaciente,
     required this.dni,
     required this.nhc,
     required this.paciente,
+    required this.selectPendiente,
   });
 
   @override
@@ -23,7 +31,6 @@ class AlertdialogLista extends StatefulWidget {
 
 class _AlertdialogListaState extends State<AlertdialogLista> {
   GlobalKey<FormState> formKeyTriaje = GlobalKey<FormState>();
-  GlobalKey<FormFieldState> keyDni = GlobalKey<FormFieldState>();
   TextEditingController dniController = TextEditingController();
   TextEditingController nhcController = TextEditingController();
   TextEditingController pacienteController = TextEditingController();
@@ -173,8 +180,9 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
   void submitTriaje() {
     if (formKeyTriaje.currentState!.validate()) {
       Triaje triaje = Triaje(
-          codPaciente: widget.codigoPaciente,
+          codigo: widget.codigoAtencion,
           codEnfermera: widget.codigoEnfermera,
+          codPaciente: widget.codigoPaciente,
           peso: pesoController.text,
           talla: tallaController.text,
           temperatura: temperaturaController.text,
@@ -184,6 +192,7 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
           limpiar();
           showToast('Datos registrados con éxito.', Colors.green);
           Navigator.of(context).pop();
+          widget.selectPendiente();
         } else {
           showToast('Error al registrar datos.', Colors.red);
           FocusScope.of(context).unfocus();

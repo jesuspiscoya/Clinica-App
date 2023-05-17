@@ -1,9 +1,18 @@
 import 'package:intl/intl.dart';
 
 class Atencion {
-  final String codPaciente;
-  late final String codEspecialidad;
-  late final String codEnfermera;
+  late final String? codigo;
+  late final String? codPaciente;
+  late final String? codEspecialidad;
+  late final String? codEnfermera;
+  late final String? codTriaje;
+  late final String? codMedico;
+  late final String? motivo;
+  late final String? sintomas;
+  late final String? diagnostico;
+  late final String? tratamiento;
+  late final String? observaciones;
+  late final String? examenes;
   late final DateTime fecha;
   late final String nhc;
   late final String dni;
@@ -12,13 +21,22 @@ class Atencion {
   late final String materno;
 
   Atencion({
-    required this.codPaciente,
-    required this.codEspecialidad,
-    required this.codEnfermera,
+    this.codigo,
+    this.codPaciente,
+    this.codEspecialidad,
+    this.codEnfermera,
+    this.codMedico,
+    this.motivo,
+    this.sintomas,
+    this.diagnostico,
+    this.tratamiento,
+    this.observaciones,
+    this.examenes,
   });
 
   Atencion.fromTriaje(Map<String, dynamic> item)
-      : codPaciente = item['cod_paciente'],
+      : codigo = item['cod_atencion'],
+        codPaciente = item['cod_paciente'],
         codEnfermera = item['cod_enfermera'],
         nhc = item['nhc'],
         dni = item['dni'],
@@ -28,18 +46,33 @@ class Atencion {
         fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
 
   Atencion.fromPendiente(Map<String, dynamic> item)
-      : codPaciente = item['cod_paciente'],
+      : codigo = item['cod_atencion'],
+        codPaciente = item['cod_paciente'],
+        codTriaje = item['cod_triaje'],
         dni = item['dni'],
         nombres = item['nombres'],
         paterno = item['ape_paterno'],
         materno = item['ape_materno'],
         fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
 
-  Map<String, Object?> toMap() {
+  Map<String, Object?> toRegistrar() {
     return {
       'cod_paciente': codPaciente,
       'cod_especialidad': codEspecialidad,
       'cod_enfermera': codEnfermera,
+    };
+  }
+
+  Map<String, Object?> toModificar() {
+    return {
+      'cod_atencion': codigo,
+      'cod_medico': codMedico,
+      'motivo': motivo,
+      'sintomas': sintomas,
+      'diagnostico': diagnostico,
+      'tratamiento': tratamiento,
+      'observaciones': observaciones,
+      'examenes': examenes,
     };
   }
 }

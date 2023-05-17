@@ -7,7 +7,7 @@ class LoginDao {
 
   Future<dynamic> loginEnfermera(String usuario, String password) async {
     var response = await http.post(
-      Uri.parse("http://$host/api_clinica/login_enfermera.php"),
+      Uri.parse('http://$host/api_clinica/login_enfermera.php'),
       body: {
         'usuario': usuario,
         'password': password,
@@ -18,7 +18,7 @@ class LoginDao {
 
   Future<dynamic> loginMedico(String usuario, String password) async {
     var response = await http.post(
-      Uri.parse("http://$host/api_clinica/login_medico.php"),
+      Uri.parse('http://$host/api_clinica/login_medico.php'),
       body: {
         'usuario': usuario,
         'password': password,

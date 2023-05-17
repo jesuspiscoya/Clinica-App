@@ -4,7 +4,7 @@ require 'conexion.php';
 $obj = new Conexion;
 $conexion = $obj->getConexion();
 
-$sql = "CALL BuscarTriaje('" . $_POST['cod_paciente'] . "')";
+$sql = "CALL BuscarTriaje('" . $_POST['cod_triaje'] . "')";
 $resultado = $conexion->query($sql);
 
 if ($row = $resultado->fetch_assoc()) {

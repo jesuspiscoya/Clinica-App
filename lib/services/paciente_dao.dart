@@ -8,14 +8,14 @@ class PacienteDao {
 
   Future<bool> registrar(Paciente paciente) async {
     var response = await http.post(
-        Uri.parse("http://$host/api_clinica/registrar_paciente.php"),
+        Uri.parse('http://$host/api_clinica/registrar_paciente.php'),
         body: paciente.toMap());
     return json.decode(response.body);
   }
 
   Future<dynamic> buscar(String dni) async {
     var response = await http.post(
-        Uri.parse("http://$host/api_clinica/buscar_paciente.php"),
+        Uri.parse('http://$host/api_clinica/buscar_paciente.php'),
         body: {'dni': dni});
     return json.decode(response.body) != null
         ? Paciente.fromMap(json.decode(response.body) as Map<String, dynamic>)

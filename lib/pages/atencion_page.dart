@@ -251,7 +251,7 @@ class _AtencionPageState extends State<AtencionPage> {
               limpiar();
               showToast('Atención registrada con éxito.', Colors.green);
             } else {
-              showToast('Atención registrada con éxito.', Colors.red);
+              showToast('Error al registrar atención.', Colors.red);
               FocusScope.of(context).unfocus();
             }
           });

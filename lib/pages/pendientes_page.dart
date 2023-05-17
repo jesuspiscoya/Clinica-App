@@ -1,12 +1,16 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:clinica_app/model/atencion.dart';
+import 'package:clinica_app/services/atencion_dao.dart';
 import 'package:clinica_app/services/triaje_dao.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PendientesPage extends StatefulWidget {
-  const PendientesPage({super.key});
+  final String codMedico;
+
+  const PendientesPage({super.key, required this.codMedico});
 
   @override
   State<PendientesPage> createState() => _PendientesPageState();
@@ -37,15 +41,15 @@ class _PendientesPageState extends State<PendientesPage> {
         !selected
             ? ListviewBuild(
                 medico: true,
-                selectPendiente: (selected, atencion) => setState(() {
-                      this.selected = selected;
+                selectPendiente: (atencion) => setState(() {
+                      selected = true;
                       this.atencion = atencion;
                     }))
             : SlideInRight(
                 duration: const Duration(milliseconds: 250),
                 from: MediaQuery.of(context).size.width,
                 child: FutureBuilder(
-                  future: TriajeDao().buscarTriaje(atencion.codPaciente),
+                  future: TriajeDao().buscarTriaje(atencion.codTriaje!),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -198,11 +202,35 @@ class _PendientesPageState extends State<PendientesPage> {
           borderRadius: BorderRadius.all(Radius.circular(30))),
       child: MaterialButton(
         shape: const StadiumBorder(),
-        onPressed: () => setState(() => true),
+        onPressed: () => submitRegistrar(),
         child: const Text('Registrar Atención',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
     );
+  }
+
+  void submitRegistrar() {
+    if (formKeyRegistrar.currentState!.validate()) {
+      Atencion atencion = Atencion(
+          codigo: this.atencion.codigo,
+          codMedico: widget.codMedico,
+          motivo: motivoController.text,
+          sintomas: sintomasController.text,
+          diagnostico: diagnosticoController.text,
+          tratamiento: tratamientoController.text,
+          observaciones: observacionesController.text,
+          examenes: examenesController.text);
+      AtencionDao().modificar(atencion).then((value) {
+        if (value) {
+          limpiar();
+          setState(() => selected = false);
+          showToast('Atención registrada con éxito.', Colors.green);
+        } else {
+          showToast('Error al registrar atención.', Colors.red);
+          FocusScope.of(context).unfocus();
+        }
+      });
+    }
   }
 
   Widget textLabel(bool titulo, String label) {
@@ -219,5 +247,26 @@ class _PendientesPageState extends State<PendientesPage> {
         ),
       ),
     );
+  }
+
+  void limpiar() {
+    motivoController.clear();
+    sintomasController.clear();
+    diagnosticoController.clear();
+    tratamientoController.clear();
+    observacionesController.clear();
+    examenesController.clear();
+    selected = false;
+  }
+
+  void showToast(String msg, Color color) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: color,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }

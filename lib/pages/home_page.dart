@@ -57,7 +57,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> listPages = [
-      widget.enfermera != null ? atencionPage : const PendientesPage(),
+      widget.enfermera != null
+          ? atencionPage
+          : PendientesPage(codMedico: widget.medico!.codigo),
       widget.enfermera != null ? const RegisterPage() : const HistorialPage(),
       widget.enfermera != null ? const TriagePage() : const SizedBox(),
       const ProfilePage(),

@@ -1,4 +1,5 @@
 class Triaje {
+  late final String? codigo;
   late final String codEnfermera;
   late final String codPaciente;
   final String peso;
@@ -7,6 +8,7 @@ class Triaje {
   final String presion;
 
   Triaje({
+    this.codigo,
     required this.codEnfermera,
     required this.codPaciente,
     required this.peso,
@@ -23,6 +25,7 @@ class Triaje {
 
   Map<String, Object?> toMap() {
     return {
+      'cod_atencion': codigo,
       'cod_enfermera': codEnfermera,
       'cod_paciente': codPaciente,
       'peso': peso,
