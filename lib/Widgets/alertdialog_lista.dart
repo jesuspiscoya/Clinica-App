@@ -6,19 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AlertdialogLista extends StatefulWidget {
-  final String codigoAtencion,
-      codigoEnfermera,
-      codigoPaciente,
-      dni,
-      nhc,
-      paciente;
+  final String codAtencion, codEnfermera, codPaciente, dni, nhc, paciente;
   final Function selectPendiente;
 
   const AlertdialogLista({
     super.key,
-    required this.codigoAtencion,
-    required this.codigoEnfermera,
-    required this.codigoPaciente,
+    required this.codAtencion,
+    required this.codEnfermera,
+    required this.codPaciente,
     required this.dni,
     required this.nhc,
     required this.paciente,
@@ -180,9 +175,9 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
   void submitTriaje() {
     if (formKeyTriaje.currentState!.validate()) {
       Triaje triaje = Triaje(
-          codigo: widget.codigoAtencion,
-          codEnfermera: widget.codigoEnfermera,
-          codPaciente: widget.codigoPaciente,
+          codigo: widget.codAtencion,
+          codEnfermera: widget.codEnfermera,
+          codPaciente: widget.codPaciente,
           peso: pesoController.text,
           talla: tallaController.text,
           temperatura: temperaturaController.text,

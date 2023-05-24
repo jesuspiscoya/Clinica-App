@@ -41,6 +41,7 @@ class _PendientesPageState extends State<PendientesPage> {
         !selected
             ? ListviewBuild(
                 medico: true,
+                listaFuture: AtencionDao().listarPendientes(),
                 selectPendiente: (atencion) => setState(() {
                       selected = true;
                       this.atencion = atencion;
@@ -237,7 +238,7 @@ class _PendientesPageState extends State<PendientesPage> {
     return Container(
       color: titulo ? Colors.blue : null,
       child: Center(
-        heightFactor: 1.3,
+        heightFactor: titulo ? 1.3 : 1.5,
         child: Text(
           label,
           style: TextStyle(

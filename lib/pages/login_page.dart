@@ -6,9 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController usuarioController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -16,6 +21,7 @@ class LoginPage extends StatelessWidget {
       colorFilter: const ColorFilter.mode(Colors.greenAccent, BlendMode.srcIn));
   final Widget svgIcon2 = SvgPicture.asset('assets/image.svg',
       colorFilter: const ColorFilter.mode(Colors.blueAccent, BlendMode.srcIn));
+  bool loader = false;
 
   @override
   Widget build(BuildContext context) {
@@ -137,47 +143,54 @@ class LoginPage extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(15)),
       ),
       child: MaterialButton(
-          child: const Text('Ingresar',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700)),
+          child: !loader
+              ? const Text('Ingresar',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700))
+              : const CircularProgressIndicator(),
           onPressed: () => submitIngresar(context)),
     );
   }
 
   void submitIngresar(BuildContext context) {
-    LoginDao()
-        .loginEnfermera(usuarioController.text, passwordController.text)
-        .then((value) {
-      if (value == null) {
-        LoginDao()
-            .loginMedico(usuarioController.text, passwordController.text)
-            .then((value) {
-          if (value == null) {
-            Fluttertoast.showToast(
-                msg: "Usuario o contraseña incorrecta.",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        HomePage(medico: Medico.fromLogin(value))));
-          }
-        });
-      } else {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    HomePage(enfermera: Enfermera.fromLogin(value))));
-      }
-    });
+    if (formKey.currentState!.validate()) {
+      setState(() => loader = true);
+      FocusScope.of(context).unfocus();
+      LoginDao()
+          .loginEnfermera(usuarioController.text, passwordController.text)
+          .then((value) {
+        if (value == null) {
+          LoginDao()
+              .loginMedico(usuarioController.text, passwordController.text)
+              .then((value) {
+            if (value == null) {
+              setState(() => loader = false);
+              Fluttertoast.showToast(
+                  msg: "Usuario o contraseña incorrecta.",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage(medico: Medico.fromLogin(value))));
+            }
+          });
+        } else {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      HomePage(enfermera: Enfermera.fromLogin(value))));
+        }
+      });
+    }
   }
 }

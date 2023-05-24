@@ -1,17 +1,19 @@
 import 'package:clinica_app/model/atencion.dart';
-import 'package:clinica_app/services/atencion_dao.dart';
 import 'package:clinica_app/services/triaje_dao.dart';
 import 'package:clinica_app/widgets/alertdialog_lista.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class ListviewBuild extends StatefulWidget {
   final bool medico;
+  final Future<List<Atencion>> listaFuture;
   final Function? selectPendiente;
 
   const ListviewBuild({
     super.key,
     required this.medico,
+    required this.listaFuture,
     this.selectPendiente,
   });
 
@@ -20,7 +22,7 @@ class ListviewBuild extends StatefulWidget {
 }
 
 class _ListviewBuildState extends State<ListviewBuild> {
-  List<Atencion> listaPendientes = <Atencion>[], lista = <Atencion>[];
+  List<Atencion> listaAtencion = <Atencion>[], lista = <Atencion>[];
 
   @override
   void initState() {
@@ -29,11 +31,9 @@ class _ListviewBuildState extends State<ListviewBuild> {
   }
 
   void getPendientes() async {
-    final data = widget.medico
-        ? await AtencionDao().listarPendientes()
-        : await TriajeDao().listarPendientes();
+    final data = await widget.listaFuture;
     setState(() {
-      listaPendientes = data;
+      listaAtencion = data;
       lista = data;
     });
   }
@@ -48,55 +48,57 @@ class _ListviewBuildState extends State<ListviewBuild> {
         padding: const EdgeInsets.all(15),
         child: Column(
           children: [
-            widget.medico ? inputBuscar() : const SizedBox(),
-            widget.medico ? const SizedBox(height: 10) : const SizedBox(),
-            lista.isNotEmpty
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: listaPendientes.length,
-                    itemBuilder: (context, index) {
-                      Atencion atencion = listaPendientes.elementAt(index);
-                      return GestureDetector(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 5),
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment(0, 5),
-                                colors: <Color>[
-                                  Color(0xFF4284DB),
-                                  Color(0xFF29EAC4),
-                                ],
+            inputBuscar(),
+            const SizedBox(height: 10),
+            lista.isEmpty
+                ? const CircularProgressIndicator()
+                : listaAtencion.isEmpty
+                    ? Center(
+                        child: Text('Sin información para mostrar.',
+                            style: TextStyle(
+                                color: Colors.greenAccent.shade400,
+                                fontWeight: FontWeight.w700)))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: listaAtencion.length,
+                        itemBuilder: (context, index) {
+                          Atencion atencion = listaAtencion.elementAt(index);
+                          return GestureDetector(
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment(0, 5),
+                                    colors: <Color>[
+                                      Color(0xFF4284DB),
+                                      Color(0xFF29EAC4),
+                                    ],
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12)),
+                                ),
+                                child: listaCard(atencion),
                               ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
-                            ),
-                            child: listaCard(atencion),
-                          ),
-                          onTap: () => !widget.medico
-                              ? showDialog(
-                                  context: context,
-                                  builder: (context) => AlertdialogLista(
-                                      codigoAtencion: atencion.codigo!,
-                                      codigoEnfermera: atencion.codEnfermera!,
-                                      codigoPaciente: atencion.codPaciente!,
-                                      dni: atencion.dni,
-                                      nhc: atencion.nhc,
-                                      paciente:
-                                          '${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
-                                      selectPendiente: () => TriajeDao()
-                                          .listarPendientes()
-                                          .then((value) => setState(
-                                              () => listaPendientes = value))))
-                              : setState(
-                                  () => widget.selectPendiente!(atencion)));
-                    },
-                  )
-                : Center(
-                    child: Text('Sin pacientes pendientes.',
-                        style: TextStyle(
-                            color: Colors.greenAccent.shade400,
-                            fontWeight: FontWeight.w700)))
+                              onTap: () => !widget.medico
+                                  ? showDialog(
+                                      context: context,
+                                      builder: (context) => AlertdialogLista(
+                                          codAtencion: atencion.codigo!,
+                                          codEnfermera: atencion.codEnfermera!,
+                                          codPaciente: atencion.codPaciente!,
+                                          dni: atencion.dni,
+                                          nhc: atencion.nhc,
+                                          paciente:
+                                              '${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
+                                          selectPendiente: () => TriajeDao()
+                                              .listarPendientes()
+                                              .then((value) => setState(() =>
+                                                  listaAtencion = value))))
+                                  : setState(
+                                      () => widget.selectPendiente!(atencion)));
+                        },
+                      ),
           ],
         ),
       ),
@@ -146,6 +148,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
     return TextFormField(
       textInputAction: TextInputAction.search,
       keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       decoration: const InputDecoration(
           isDense: true,
           filled: true,
@@ -162,7 +165,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
   }
 
   void buscarPaciente(String input) {
-    setState(() => listaPendientes = lista
+    setState(() => listaAtencion = lista
         .where((element) => element.dni.contains(input.toLowerCase()))
         .toList());
   }

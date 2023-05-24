@@ -37,6 +37,7 @@ class _DropdownUbigeoState extends State<DropdownUbigeo> {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
+
           var data = snapshot.data!;
           return DropdownButtonFormField<String>(
             value: widget.value,

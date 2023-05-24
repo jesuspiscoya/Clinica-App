@@ -60,7 +60,9 @@ class _HomePageState extends State<HomePage> {
       widget.enfermera != null
           ? atencionPage
           : PendientesPage(codMedico: widget.medico!.codigo),
-      widget.enfermera != null ? const RegisterPage() : const HistorialPage(),
+      widget.enfermera != null
+          ? const RegisterPage()
+          : HistorialPage(codMedico: widget.medico!.codigo),
       widget.enfermera != null ? const TriagePage() : const SizedBox(),
       const ProfilePage(),
     ];

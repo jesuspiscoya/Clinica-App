@@ -43,7 +43,7 @@ class Atencion {
         nombres = item['nombres'],
         paterno = item['ape_paterno'],
         materno = item['ape_materno'],
-        fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
+        fecha = DateFormat('yyyy-MM-dd HH:mm').parse(item['fec_registro']);
 
   Atencion.fromPendiente(Map<String, dynamic> item)
       : codigo = item['cod_atencion'],
@@ -53,7 +53,23 @@ class Atencion {
         nombres = item['nombres'],
         paterno = item['ape_paterno'],
         materno = item['ape_materno'],
-        fecha = DateFormat('yyyy-MM-dd hh:mm').parse(item['fec_registro']);
+        fecha = DateFormat('yyyy-MM-dd HH:mm').parse(item['fec_registro']);
+
+  Atencion.fromHistorial(Map<String, dynamic> item)
+      : codigo = item['cod_atencion'],
+        codPaciente = item['cod_paciente'],
+        codTriaje = item['cod_triaje'],
+        dni = item['dni'],
+        nombres = item['nombres'],
+        paterno = item['ape_paterno'],
+        materno = item['ape_materno'],
+        fecha = DateFormat('yyyy-MM-dd HH:mm').parse(item['fec_modificacion']),
+        motivo = item['motivo'],
+        sintomas = item['sintomas'],
+        diagnostico = item['diagnostico'],
+        tratamiento = item['tratamiento'],
+        observaciones = item['observaciones'],
+        examenes = item['examenes'];
 
   Map<String, Object?> toRegistrar() {
     return {

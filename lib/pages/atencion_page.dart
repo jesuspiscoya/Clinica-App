@@ -36,6 +36,7 @@ class _AtencionPageState extends State<AtencionPage> {
   TextEditingController donacionController = TextEditingController();
   DropdownForm dropdownEspecialidad = DropdownForm(label: 'Especialidad');
   late String codPaciente;
+  bool loader = false;
 
   @override
   Widget build(BuildContext context) {
@@ -155,31 +156,34 @@ class _AtencionPageState extends State<AtencionPage> {
                   borderSide:
                       const BorderSide(width: 1.3, color: Colors.redAccent),
                   borderRadius: BorderRadius.circular(30)),
-              suffixIcon: Container(
-                height: 0,
-                width: 0,
-                margin: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    center: Alignment.bottomLeft,
-                    radius: 1.1,
-                    colors: <Color>[
-                      Color(0xFF4284DB),
-                      Color(0xFF29EAC4),
-                    ],
-                  ),
-                ),
-                child: MaterialButton(
-                  minWidth: 0,
-                  padding: EdgeInsets.zero,
-                  shape: const CircleBorder(),
-                  child: const Icon(Icons.search_rounded,
-                      size: 23, color: Colors.white),
-                  onPressed: () => submitBuscar(),
-                ),
-              )),
-          onFieldSubmitted: (value) => setState(() => submitBuscar()),
+              suffixIcon: !loader
+                  ? Container(
+                      height: 0,
+                      width: 0,
+                      margin: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                              center: Alignment.bottomLeft,
+                              radius: 1.1,
+                              colors: <Color>[
+                                Color(0xFF4284DB),
+                                Color(0xFF29EAC4),
+                              ])),
+                      child: MaterialButton(
+                        minWidth: 0,
+                        padding: EdgeInsets.zero,
+                        shape: const CircleBorder(),
+                        child: const Icon(Icons.search_rounded,
+                            size: 23, color: Colors.white),
+                        onPressed: () => submitBuscar(),
+                      ))
+                  : Container(
+                      width: 0,
+                      height: 0,
+                      padding: const EdgeInsets.all(8),
+                      child: const CircularProgressIndicator())),
+          onFieldSubmitted: (value) => submitBuscar(),
           validator: (value) => value!.isEmpty ? 'Ingrese DNI válido.' : null,
         ),
       ),
@@ -188,6 +192,7 @@ class _AtencionPageState extends State<AtencionPage> {
 
   void submitBuscar() {
     if (formKeyBuscar.currentState!.validate()) {
+      setState(() => loader = true);
       if (dniController.text.length > 7) {
         PacienteDao().buscar(dniController.text).then((value) {
           if (value == null) {
@@ -207,11 +212,13 @@ class _AtencionPageState extends State<AtencionPage> {
             estadoController.text = value.estadoCivil;
             sangreController.text = value.sangre;
             donacionController.text = value.donacion;
-            FocusScope.of(context).unfocus();
           }
+          setState(() => loader = false);
+          FocusScope.of(context).unfocus();
         });
       } else {
         showToast('Ingrese DNI válido.', Colors.red);
+        setState(() => loader = false);
       }
     }
   }
@@ -264,19 +271,15 @@ class _AtencionPageState extends State<AtencionPage> {
   }
 
   void limpiar() {
-    setState(() {
-      dniController.clear();
-      dropdownEspecialidad = DropdownForm(label: 'Especialidad');
-      nhcController.clear();
-      pacienteController.clear();
-      fechaController.clear();
-      edadController.clear();
-      sexoController.clear();
-      estadoController.clear();
-      sangreController.clear();
-      donacionController.clear();
-      FocusScope.of(context).unfocus();
-    });
+    dropdownEspecialidad = DropdownForm(label: 'Especialidad');
+    nhcController.clear();
+    pacienteController.clear();
+    fechaController.clear();
+    edadController.clear();
+    sexoController.clear();
+    estadoController.clear();
+    sangreController.clear();
+    donacionController.clear();
   }
 
   void showToast(String msg, Color color) {

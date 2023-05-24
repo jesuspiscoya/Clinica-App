@@ -26,7 +26,7 @@ class InputForm extends StatefulWidget {
 
 class _InputFormState extends State<InputForm> {
   GlobalKey<FormFieldState> keyDni = GlobalKey<FormFieldState>();
-  bool load = false;
+  bool loader = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +92,7 @@ class _InputFormState extends State<InputForm> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             suffixIcon: widget.label == 'DNI'
-                ? !load
+                ? !loader
                     ? IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: () =>
@@ -123,7 +123,7 @@ class _InputFormState extends State<InputForm> {
   Future<void> getDatosDni(String dni) async {
     if (keyDni.currentState!.validate()) {
       if (widget.inputController.text.length > 7) {
-        setState(() => load = true);
+        setState(() => loader = true);
         String urlApi = "https://api.apis.net.pe/v1/dni?numero=$dni";
         http.Response response = await http.get(Uri.parse(urlApi));
 
@@ -134,7 +134,7 @@ class _InputFormState extends State<InputForm> {
         } else {
           setState(() => widget.buscarDni!('', ''));
         }
-        load = false;
+        loader = false;
       } else {
         Fluttertoast.showToast(
             msg: "Ingrese DNI válido.",

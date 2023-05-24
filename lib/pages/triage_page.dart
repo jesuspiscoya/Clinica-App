@@ -1,3 +1,4 @@
+import 'package:clinica_app/services/triaje_dao.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
 
@@ -7,15 +8,16 @@ class TriagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
-        SizedBox(height: 15),
-        Text(
+      children: [
+        const SizedBox(height: 15),
+        const Text(
           'Registrar Triaje',
           style: TextStyle(
               color: Colors.cyan, fontSize: 22, fontWeight: FontWeight.w800),
         ),
-        SizedBox(height: 15),
-        ListviewBuild(medico: false),
+        const SizedBox(height: 15),
+        ListviewBuild(
+            medico: false, listaFuture: TriajeDao().listarPendientes()),
       ],
     );
   }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-05-2023 a las 23:24:52
+-- Tiempo de generación: 18-05-2023 a las 20:41:30
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarPaciente` (IN `dni` VARCHAR(8))   BEGIN
+CREATE PROCEDURE `BuscarPaciente` (IN `dni` VARCHAR(8))   BEGIN
 SELECT pa.cod_paciente, pa.nhc, pe.nombres, pe.ape_paterno, pe.ape_materno, DATE_FORMAT(pe.fec_nacimiento, '%d-%m-%Y') AS fec_nacimiento, pe.sexo, pe.est_civil, pa.tip_sangre, pa.don_organos
 FROM paciente pa
 INNER JOIN persona pe
@@ -33,12 +33,12 @@ ON pa.cod_persona = pe.cod_persona
 WHERE pe.dni = dni;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarTriaje` (IN `cod_triajes` INT)   BEGIN
+CREATE PROCEDURE `BuscarTriaje` (IN `cod_triajes` INT)   BEGIN
 SELECT * FROM triaje WHERE cod_triaje = cod_triajes;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarAtencionesPendientes` ()   BEGIN
-SELECT a.cod_atencion, a.cod_paciente, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
+CREATE PROCEDURE `ListarAtencionesPendientes` ()   BEGIN
+SELECT a.cod_atencion, a.cod_paciente, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro
 FROM atencion a
 INNER JOIN paciente pa
 INNER JOIN persona pe
@@ -46,11 +46,20 @@ ON a.cod_paciente = pa.cod_paciente AND pa.cod_persona = pe.cod_persona
 WHERE a.estado = 1;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarEspecialidad` ()   BEGIN
+CREATE PROCEDURE `ListarEspecialidad` ()   BEGIN
 SELECT * FROM especialidad;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarTriajePendiente` ()   BEGIN
+CREATE PROCEDURE `ListarHistorialAtenciones` (IN `cod_medicos` INT)   BEGIN
+SELECT a.cod_atencion, a.cod_paciente, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_modificacion, a.motivo, a.sintomas, a.diagnostico, a.tratamiento, a.observaciones, a.examenes
+FROM atencion a
+INNER JOIN paciente pa
+INNER JOIN persona pe
+ON a.cod_paciente = pa.cod_paciente AND pa.cod_persona = pe.cod_persona
+WHERE a.cod_medico = cod_medicos AND a.estado = 2;
+END$$
+
+CREATE PROCEDURE `ListarTriajePendiente` ()   BEGIN
 SELECT a.cod_atencion, pa.cod_paciente, a.cod_enfermera, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro
 FROM atencion a
 INNER JOIN paciente pa
@@ -59,7 +68,7 @@ ON a.cod_paciente = pa.cod_paciente AND pa.cod_persona = pe.cod_persona
 WHERE a.estado = 0;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginEnfermera` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE PROCEDURE `LoginEnfermera` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
 SELECT e.cod_enfermera, p.nombres, p.ape_paterno, p.ape_materno
 FROM enfermera e
 INNER JOIN persona p
@@ -67,7 +76,7 @@ ON e.cod_persona = p.cod_persona
 WHERE e.usuario = user AND e.password = pass;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginMedico` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE PROCEDURE `LoginMedico` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
 SELECT m.cod_medico, e.nom_especialidad, p.nombres, p.ape_paterno, p.ape_materno
 FROM medico m
 INNER JOIN persona p
@@ -76,38 +85,38 @@ ON m.cod_persona = p.cod_persona AND m.cod_especialidad = e.cod_especialidad
 WHERE m.usuario = user AND m.password = pass;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ModificarAtencion` (IN `codigo` INT, IN `cod_medicos` INT, IN `motivos` VARCHAR(200), IN `sintomass` VARCHAR(200), IN `diagnosticos` VARCHAR(200), IN `tratamientos` VARCHAR(200), IN `observacioness` VARCHAR(200), IN `exameness` VARCHAR(200))   BEGIN
+CREATE PROCEDURE `ModificarAtencion` (IN `codigo` INT, IN `cod_medicos` INT, IN `motivos` VARCHAR(200), IN `sintomass` VARCHAR(200), IN `diagnosticos` VARCHAR(200), IN `tratamientos` VARCHAR(200), IN `observacioness` VARCHAR(200), IN `exameness` VARCHAR(200))   BEGIN
 UPDATE atencion SET cod_medico = cod_medicos, motivo = motivos, sintomas = sintomass, diagnostico = diagnosticos, tratamiento = tratamientos, observaciones = observacioness, examenes = exameness, estado = 2, fec_modificacion = null
 WHERE cod_atencion = codigo;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarAtencion` (IN `cod_paciente` INT, IN `cod_especialidad` INT, IN `cod_enfermera` INT)   BEGIN
+CREATE PROCEDURE `RegistrarAtencion` (IN `cod_paciente` INT, IN `cod_especialidad` INT, IN `cod_enfermera` INT)   BEGIN
 INSERT INTO atencion VALUES(null, cod_paciente, cod_especialidad, cod_enfermera, null, '', '', '', '', '', '', 0, null, null);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
 INSERT INTO enfermera VALUES(null, (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1), colegiatura, correo, user, SHA(pass));
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
 SET @cod_per = (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1);
 INSERT INTO medico VALUES(null, @cod_per, cod_especialidad, colegiatura, correo, user, SHA(pass));
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarPaciente` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `nhc` INT, IN `sangre` VARCHAR(3), IN `organos` VARCHAR(2))   BEGIN
+CREATE PROCEDURE `RegistrarPaciente` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `nhc` INT, IN `sangre` VARCHAR(3), IN `organos` VARCHAR(2))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
 INSERT INTO paciente VALUES(null, nhc, (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1), sangre, organos);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarTriaje` (IN `cod_atencions` INT, IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
+CREATE PROCEDURE `RegistrarTriaje` (IN `cod_atencions` INT, IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
 INSERT INTO triaje VALUES(null, cod_enfermera, cod_pacientes, peso, talla, temperatura, presion, null);
 SET @cod_triaje = (SELECT cod_triaje FROM triaje WHERE cod_paciente = cod_pacientes ORDER BY cod_triaje DESC LIMIT 1);
 UPDATE atencion SET cod_triaje = @cod_triaje, estado = 1 WHERE cod_atencion = cod_atencions;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `VerificarTriaje` (IN `cod_pacientes` INT)   SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
+CREATE PROCEDURE `VerificarTriaje` (IN `cod_pacientes` INT)   SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
 FROM atencion a
 INNER JOIN paciente pa
 INNER JOIN persona pe
@@ -145,11 +154,11 @@ CREATE TABLE `atencion` (
 --
 
 INSERT INTO `atencion` (`cod_atencion`, `cod_paciente`, `cod_especialidad`, `cod_enfermera`, `cod_triaje`, `cod_medico`, `motivo`, `sintomas`, `diagnostico`, `tratamiento`, `observaciones`, `examenes`, `estado`, `fec_registro`, `fec_modificacion`) VALUES
-(1, 1000, 1001, 1000, 2, 1000, '', '', '', '', '', '', 1, '2023-05-03 07:12:19', '2023-05-17 19:28:56'),
-(2, 1002, 1000, 1000, 3, 1000, '', '', '', '', '', '', 1, '2023-05-03 07:25:22', '2023-05-17 19:14:35'),
+(1, 1000, 1001, 1000, 1, 1000, 'Preventivo', 'estornudo, tos', 'Resfriado común', 'Pastillas', '-', '-', 2, '2023-05-03 07:12:19', '2023-05-18 17:28:39'),
+(2, 1002, 1000, 1000, 2, 1000, '', '', '', '', '', '', 1, '2023-05-03 07:25:22', '2023-05-17 19:14:35'),
 (3, 1000, 1000, 1001, NULL, NULL, '', '', '', '', '', '', 0, '2023-05-06 05:52:48', '2023-05-17 19:14:35'),
 (4, 1002, 1000, 1001, NULL, NULL, '', '', '', '', '', '', 0, '2023-05-06 05:53:11', '2023-05-17 19:14:35'),
-(5, 1003, 1000, 1000, 22, 1000, '', '', '', '', '', '', 1, '2023-05-17 19:18:18', '2023-05-17 19:28:15');
+(5, 1003, 1000, 1000, 3, 1000, '', '', '', '', '', '', 1, '2023-05-17 19:18:18', '2023-05-17 19:28:15');
 
 -- --------------------------------------------------------
 
@@ -171,8 +180,8 @@ CREATE TABLE `enfermera` (
 --
 
 INSERT INTO `enfermera` (`cod_enfermera`, `cod_persona`, `num_colegiatura`, `correo`, `usuario`, `password`) VALUES
-(1000, 1003, 123456, 'jesus@gmail.com', 'jesus', '8d5004c9c74259ab775f63f7131da077814a7636'),
-(1001, 1004, 123456, 'maria@gmail.com', 'maria', 'e21fc56c1a272b630e0d1439079d0598cf8b8329');
+(1000, 1000, 123456, 'jesus@gmail.com', 'jesus', '8d5004c9c74259ab775f63f7131da077814a7636'),
+(1001, 1001, 123456, 'maria@gmail.com', 'maria', 'e21fc56c1a272b630e0d1439079d0598cf8b8329');
 
 -- --------------------------------------------------------
 
@@ -215,7 +224,7 @@ CREATE TABLE `medico` (
 --
 
 INSERT INTO `medico` (`cod_medico`, `cod_persona`, `cod_especialidad`, `num_colegiatura`, `correo`, `usuario`, `password`) VALUES
-(1000, 1008, 1001, 123456, 'oscar@gmail.com', 'oscar', '2dff4fc90e2973f54d62e257480de234bc59e2c4');
+(1000, 1005, 1001, 123456, 'oscar@gmail.com', 'oscar', '2dff4fc90e2973f54d62e257480de234bc59e2c4');
 
 -- --------------------------------------------------------
 
@@ -236,10 +245,10 @@ CREATE TABLE `paciente` (
 --
 
 INSERT INTO `paciente` (`cod_paciente`, `nhc`, `cod_persona`, `tip_sangre`, `don_organos`) VALUES
-(1000, 10054, 1005, 'O+', 'Sí'),
-(1001, 10055, 1006, 'AB+', 'No'),
-(1002, 0, 1007, 'AB+', 'No'),
-(1003, 10000, 1009, 'B-', 'No');
+(1000, 10054, 1002, 'O+', 'Sí'),
+(1001, 10055, 1003, 'AB+', 'No'),
+(1002, 10000, 1004, 'AB+', 'No'),
+(1003, 10000, 1006, 'B-', 'No');
 
 -- --------------------------------------------------------
 
