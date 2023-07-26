@@ -35,16 +35,14 @@ class _InputFormState extends State<InputForm> {
         key: widget.label == 'DNI' ? keyDni : null,
         enabled: widget.active,
         controller: widget.inputController,
-        maxLines: widget.label == 'Motivo' ||
-                widget.label == 'Síntomas' ||
+        maxLines: widget.label == 'Síntomas' ||
                 widget.label == 'Diagnóstico' ||
                 widget.label == 'Tratamiento' ||
                 widget.label == 'Observaciones' ||
                 widget.label == 'Exámenes'
             ? 3
             : 1,
-        textInputAction: widget.label == 'Motivo' ||
-                widget.label == 'Síntomas' ||
+        textInputAction: widget.label == 'Síntomas' ||
                 widget.label == 'Diagnóstico' ||
                 widget.label == 'Tratamiento' ||
                 widget.label == 'Observaciones' ||
@@ -52,24 +50,23 @@ class _InputFormState extends State<InputForm> {
             ? TextInputAction.none
             : widget.label == 'DNI'
                 ? TextInputAction.search
-                : widget.label == 'Presión'
+                : widget.label == 'Presión (mmHg)'
                     ? TextInputAction.send
                     : TextInputAction.next,
         keyboardType: widget.label == 'DNI' ||
                 widget.label == 'Teléfono' ||
-                widget.label == 'Peso' ||
-                widget.label == 'Talla' ||
-                widget.label == 'Temperatura'
+                widget.label == 'Peso (Kg)' ||
+                widget.label == 'Talla (cm)' ||
+                widget.label == 'Temperatura (°C)'
             ? TextInputType.number
-            : widget.label == 'Motivo' ||
-                    widget.label == 'Síntomas' ||
+            : widget.label == 'Síntomas' ||
                     widget.label == 'Diagnóstico' ||
                     widget.label == 'Tratamiento' ||
                     widget.label == 'Observaciones' ||
                     widget.label == 'Exámenes'
                 ? TextInputType.multiline
                 : widget.label == 'Fecha de Nacimiento' ||
-                        widget.label == 'Presión'
+                        widget.label == 'Presión (mmHg)'
                     ? TextInputType.datetime
                     : TextInputType.text,
         inputFormatters: widget.label == 'DNI'

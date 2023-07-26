@@ -19,7 +19,6 @@ class PendientesPage extends StatefulWidget {
 class _PendientesPageState extends State<PendientesPage> {
   GlobalKey<FormState> formKeyRegistrar = GlobalKey<FormState>();
   TextEditingController buscarController = TextEditingController();
-  TextEditingController motivoController = TextEditingController();
   TextEditingController sintomasController = TextEditingController();
   TextEditingController diagnosticoController = TextEditingController();
   TextEditingController tratamientoController = TextEditingController();
@@ -89,6 +88,14 @@ class _PendientesPageState extends State<PendientesPage> {
                                       fontWeight: FontWeight.w600),
                                 ),
                               ),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Especialidad: ${atencion.codEspecialidad}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
                               const SizedBox(height: 8),
                               Text(
                                 'Signos Vitales',
@@ -122,11 +129,6 @@ class _PendientesPageState extends State<PendientesPage> {
                                 ],
                               ),
                               const SizedBox(height: 15),
-                              InputForm(
-                                  label: 'Motivo',
-                                  active: true,
-                                  inputController: motivoController),
-                              const SizedBox(height: 8),
                               InputForm(
                                   label: 'Síntomas',
                                   active: true,
@@ -215,7 +217,6 @@ class _PendientesPageState extends State<PendientesPage> {
       Atencion atencion = Atencion(
           codigo: this.atencion.codigo,
           codMedico: widget.codMedico,
-          motivo: motivoController.text,
           sintomas: sintomasController.text,
           diagnostico: diagnosticoController.text,
           tratamiento: tratamientoController.text,
@@ -251,7 +252,6 @@ class _PendientesPageState extends State<PendientesPage> {
   }
 
   void limpiar() {
-    motivoController.clear();
     sintomasController.clear();
     diagnosticoController.clear();
     tratamientoController.clear();

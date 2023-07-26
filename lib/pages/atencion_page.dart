@@ -271,6 +271,7 @@ class _AtencionPageState extends State<AtencionPage> {
   }
 
   void limpiar() {
+    dniController.clear();
     dropdownEspecialidad = DropdownForm(label: 'Especialidad');
     nhcController.clear();
     pacienteController.clear();

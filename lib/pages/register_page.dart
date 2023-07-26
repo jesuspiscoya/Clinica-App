@@ -195,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void limpiar() {
-    dniController.clear();
+    // dniController.clear();
     nombresController.clear();
     apellidosController.clear();
     telefonoController.clear();

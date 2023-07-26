@@ -23,6 +23,7 @@ class ListviewBuild extends StatefulWidget {
 
 class _ListviewBuildState extends State<ListviewBuild> {
   List<Atencion> listaAtencion = <Atencion>[], lista = <Atencion>[];
+  bool loading = true;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
     setState(() {
       listaAtencion = data;
       lista = data;
+      loading = false;
     });
   }
 
@@ -50,7 +52,7 @@ class _ListviewBuildState extends State<ListviewBuild> {
           children: [
             inputBuscar(),
             const SizedBox(height: 10),
-            lista.isEmpty
+            loading
                 ? const CircularProgressIndicator()
                 : listaAtencion.isEmpty
                     ? Center(

@@ -5,6 +5,7 @@ import 'package:clinica_app/services/triaje_dao.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HistorialPage extends StatefulWidget {
   final String codMedico;
@@ -17,7 +18,6 @@ class HistorialPage extends StatefulWidget {
 
 class _HistorialPageState extends State<HistorialPage> {
   TextEditingController buscarController = TextEditingController();
-  TextEditingController motivoController = TextEditingController();
   TextEditingController sintomasController = TextEditingController();
   TextEditingController diagnosticoController = TextEditingController();
   TextEditingController tratamientoController = TextEditingController();
@@ -42,7 +42,6 @@ class _HistorialPageState extends State<HistorialPage> {
                 selectPendiente: (atencion) => setState(() {
                       selected = true;
                       this.atencion = atencion;
-                      motivoController.text = this.atencion.motivo!;
                       sintomasController.text = this.atencion.sintomas!;
                       diagnosticoController.text = this.atencion.diagnostico!;
                       tratamientoController.text = this.atencion.tratamiento!;
@@ -74,6 +73,11 @@ class _HistorialPageState extends State<HistorialPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             buttonRegresar(),
+                            const SizedBox(height: 15),
+                            Text(
+                                'Fecha: ${DateFormat('dd/MM/yyyy').format(atencion.fecha)}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600)),
                             const SizedBox(height: 15),
                             Table(
                               border:
@@ -113,11 +117,6 @@ class _HistorialPageState extends State<HistorialPage> {
                               ],
                             ),
                             const SizedBox(height: 15),
-                            InputForm(
-                                label: 'Motivo',
-                                active: false,
-                                inputController: motivoController),
-                            const SizedBox(height: 8),
                             InputForm(
                                 label: 'Síntomas',
                                 active: false,

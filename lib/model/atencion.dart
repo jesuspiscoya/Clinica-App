@@ -7,7 +7,6 @@ class Atencion {
   late final String? codEnfermera;
   late final String? codTriaje;
   late final String? codMedico;
-  late final String? motivo;
   late final String? sintomas;
   late final String? diagnostico;
   late final String? tratamiento;
@@ -26,7 +25,6 @@ class Atencion {
     this.codEspecialidad,
     this.codEnfermera,
     this.codMedico,
-    this.motivo,
     this.sintomas,
     this.diagnostico,
     this.tratamiento,
@@ -48,6 +46,7 @@ class Atencion {
   Atencion.fromPendiente(Map<String, dynamic> item)
       : codigo = item['cod_atencion'],
         codPaciente = item['cod_paciente'],
+        codEspecialidad = item['nom_especialidad'],
         codTriaje = item['cod_triaje'],
         dni = item['dni'],
         nombres = item['nombres'],
@@ -64,7 +63,6 @@ class Atencion {
         paterno = item['ape_paterno'],
         materno = item['ape_materno'],
         fecha = DateFormat('yyyy-MM-dd HH:mm').parse(item['fec_modificacion']),
-        motivo = item['motivo'],
         sintomas = item['sintomas'],
         diagnostico = item['diagnostico'],
         tratamiento = item['tratamiento'],
@@ -83,7 +81,6 @@ class Atencion {
     return {
       'cod_atencion': codigo,
       'cod_medico': codMedico,
-      'motivo': motivo,
       'sintomas': sintomas,
       'diagnostico': diagnostico,
       'tratamiento': tratamiento,

@@ -109,7 +109,7 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
                                     inputController: temperaturaController),
                                 const SizedBox(width: 8),
                                 InputForm(
-                                    label: 'Presión Arterial (mmHg)',
+                                    label: 'Presión (mmHg)',
                                     active: true,
                                     inputController: presionController)
                               ],
