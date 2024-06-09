@@ -10,8 +10,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [SizedBox(height: 13), Text('Perfil')],
+    return const Column(
+      children: [SizedBox(height: 13), Text('Perfil')],
     );
   }
 }

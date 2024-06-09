@@ -5,7 +5,7 @@ import 'package:clinica_app/model/especialidad.dart';
 import 'package:http/http.dart' as http;
 
 class AtencionDao {
-  static const String host = 'http://192.168.100.134/api_clinica';
+  static const String host = 'http://10.0.2.2:80/api_clinica';
 
   Future<bool> registrar(Atencion atencion) async {
     var response = await http.post(Uri.parse('$host/registrar_atencion.php'),

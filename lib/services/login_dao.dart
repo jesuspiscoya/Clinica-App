@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class LoginDao {
-  static const String host = 'http://192.168.100.134/api_clinica';
+  static const String host = 'http://10.0.2.2:80/api_clinica';
 
   Future<dynamic> loginEnfermera(String usuario, String password) async {
     var response = await http.post(
