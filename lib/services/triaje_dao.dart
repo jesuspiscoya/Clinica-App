@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:clinica_app/model/atencion.dart';
+import 'package:clinica_app/model/host.dart';
 import 'package:clinica_app/model/triaje.dart';
 import 'package:http/http.dart' as http;
 
 class TriajeDao {
-  static const String host = 'http://10.0.2.2:80/api_clinica';
+  static String host = Host.getHost;
 
   Future<Triaje> buscarTriaje(String codTriaje) async {
     var response = await http.post(Uri.parse('$host/buscar_triaje.php'),

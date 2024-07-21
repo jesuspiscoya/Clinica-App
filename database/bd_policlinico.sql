@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 09-06-2024 a las 07:35:35
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Servidor: localhost
+-- Tiempo de generación: 21-07-2024 a las 10:08:01
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -25,7 +25,28 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-CREATE PROCEDURE `BuscarPaciente` (IN `dni` VARCHAR(8))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ActualizarPassword` (IN `cod_personals` INT, IN `pass` VARCHAR(70))   BEGIN
+UPDATE personal
+SET password = pass
+WHERE cod_personal = cod_personals;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ActualizarPersonal` (IN `cod_personals` INT, IN `correos` VARCHAR(100), IN `telefonos` VARCHAR(9), IN `direccions` VARCHAR(100))   BEGIN
+UPDATE personal SET correo = correos
+WHERE cod_personal = cod_personals;
+SET @cod_per = (SELECT cod_persona FROM personal WHERE cod_personal = cod_personals);
+UPDATE persona SET telefono = telefonos, direccion = direccions
+WHERE cod_persona = @cod_per;
+
+SELECT m.cod_personal, e.nom_especialidad, m.tipo_personal, p.nombres, p.ape_paterno, p.ape_materno, p.fec_nacimiento, m.correo, p.telefono, p.direccion
+FROM personal m
+INNER JOIN persona p
+INNER JOIN especialidad e
+ON m.cod_persona = p.cod_persona
+WHERE m.cod_personal = cod_personals;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarPaciente` (IN `dni` VARCHAR(8))   BEGIN
 SELECT pa.cod_paciente, pa.nhc, pe.nombres, pe.ape_paterno, pe.ape_materno, DATE_FORMAT(pe.fec_nacimiento, '%d-%m-%Y') AS fec_nacimiento, pe.sexo, pe.est_civil, pa.tip_sangre, pa.don_organos
 FROM paciente pa
 INNER JOIN persona pe
@@ -33,11 +54,11 @@ ON pa.cod_persona = pe.cod_persona
 WHERE pe.dni = dni;
 END$$
 
-CREATE PROCEDURE `BuscarTriaje` (IN `cod_triajes` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `BuscarTriaje` (IN `cod_triajes` INT)   BEGIN
 SELECT * FROM triaje WHERE cod_triaje = cod_triajes;
 END$$
 
-CREATE PROCEDURE `ListarAtencionesPendientes` ()   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarAtencionesPendientes` ()   BEGIN
 SELECT a.cod_atencion, a.cod_paciente, e.nom_especialidad, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro
 FROM atencion a
 INNER JOIN paciente pa
@@ -47,11 +68,11 @@ ON a.cod_paciente = pa.cod_paciente AND a.cod_especialidad = e.cod_especialidad 
 WHERE a.estado = 1 ORDER BY a.fec_registro;
 END$$
 
-CREATE PROCEDURE `ListarEspecialidad` ()   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarEspecialidad` ()   BEGIN
 SELECT * FROM especialidad;
 END$$
 
-CREATE PROCEDURE `ListarHistorialAtenciones` (IN `cod_medicos` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarHistorialAtenciones` (IN `cod_medicos` INT)   BEGIN
 SELECT a.cod_atencion, a.cod_paciente, a.cod_triaje, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_modificacion, a.sintomas, a.diagnostico, a.tratamiento, a.observaciones, a.examenes
 FROM atencion a
 INNER JOIN paciente pa
@@ -61,7 +82,7 @@ WHERE a.cod_medico = cod_medicos AND a.estado = 2
 ORDER BY a.fec_modificacion DESC;
 END$$
 
-CREATE PROCEDURE `ListarTriajePendiente` ()   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListarTriajePendiente` ()   BEGIN
 SELECT a.cod_atencion, pa.cod_paciente, a.cod_enfermera, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro
 FROM atencion a
 INNER JOIN paciente pa
@@ -70,55 +91,49 @@ ON a.cod_paciente = pa.cod_paciente AND pa.cod_persona = pe.cod_persona
 WHERE a.estado = 0;
 END$$
 
-CREATE PROCEDURE `LoginEnfermera` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
-SELECT e.cod_enfermera, p.nombres, p.ape_paterno, p.ape_materno
-FROM enfermera e
-INNER JOIN persona p
-ON e.cod_persona = p.cod_persona
-WHERE e.usuario = user AND e.password = pass;
-END$$
-
-CREATE PROCEDURE `LoginMedico` (IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
-SELECT m.cod_medico, e.nom_especialidad, p.nombres, p.ape_paterno, p.ape_materno
-FROM medico m
+CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginPersonal` (IN `user` VARCHAR(20), IN `pass` VARCHAR(70))   BEGIN
+SELECT m.cod_personal, e.nom_especialidad, m.tipo_personal, p.nombres, p.ape_paterno, p.ape_materno, p.fec_nacimiento, m.correo, p.telefono, p.direccion
+FROM personal m
 INNER JOIN persona p
 INNER JOIN especialidad e
-ON m.cod_persona = p.cod_persona AND m.cod_especialidad = e.cod_especialidad
+ON m.cod_persona = p.cod_persona
 WHERE m.usuario = user AND m.password = pass;
 END$$
 
-CREATE PROCEDURE `ModificarAtencion` (IN `codigo` INT, IN `cod_medicos` INT, IN `sintomass` VARCHAR(200), IN `diagnosticos` VARCHAR(200), IN `tratamientos` VARCHAR(200), IN `observacioness` VARCHAR(200), IN `exameness` VARCHAR(200))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ModificarAtencion` (IN `codigo` INT, IN `cod_medicos` INT, IN `sintomass` VARCHAR(200), IN `diagnosticos` VARCHAR(200), IN `tratamientos` VARCHAR(200), IN `observacioness` VARCHAR(200), IN `exameness` VARCHAR(200))   BEGIN
 UPDATE atencion SET cod_medico = cod_medicos, sintomas = sintomass, diagnostico = diagnosticos, tratamiento = tratamientos, observaciones = observacioness, examenes = exameness, estado = 2, fec_modificacion = null
 WHERE cod_atencion = codigo;
 END$$
 
-CREATE PROCEDURE `RegistrarAtencion` (IN `cod_paciente` INT, IN `cod_especialidad` INT, IN `cod_enfermera` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarAtencion` (IN `cod_paciente` INT, IN `cod_especialidad` INT, IN `cod_enfermera` INT)   BEGIN
 INSERT INTO atencion VALUES(null, cod_paciente, cod_especialidad, cod_enfermera, null, null, '', '', '', '', '', '', 0, null, null);
 END$$
 
-CREATE PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(70))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
-INSERT INTO enfermera VALUES(null, (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1), colegiatura, correo, user, SHA(pass));
+SET @cod_per = (SELECT cod_persona FROM persona ORDER BY 1 DESC LIMIT 1);
+INSERT INTO personal VALUES(null, @cod_per, null, 2, correo, user, SHA(pass));
 END$$
 
-CREATE PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(70))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
-SET @cod_per = (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1);
-INSERT INTO medico VALUES(null, @cod_per, cod_especialidad, colegiatura, correo, user, SHA(pass));
+SET @cod_per = (SELECT cod_persona FROM persona ORDER BY 1 DESC LIMIT 1);
+INSERT INTO personal VALUES(null, @cod_per, cod_especialidad, 1, correo, user, SHA(pass));
 END$$
 
-CREATE PROCEDURE `RegistrarPaciente` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `nhc` INT, IN `sangre` VARCHAR(3), IN `organos` VARCHAR(2))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarPaciente` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `nhc` INT, IN `sangre` VARCHAR(3), IN `organos` VARCHAR(2))   BEGIN
 INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
-INSERT INTO paciente VALUES(null, nhc, (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1), sangre, organos);
+SET @cod_per = (SELECT cod_persona FROM persona ORDER BY 1 DESC LIMIT 1);
+INSERT INTO paciente VALUES(null, nhc, @cod_per, sangre, organos);
 END$$
 
-CREATE PROCEDURE `RegistrarTriaje` (IN `cod_atencions` INT, IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarTriaje` (IN `cod_atencions` INT, IN `cod_enfermera` INT, IN `cod_pacientes` INT, IN `peso` VARCHAR(6), IN `talla` VARCHAR(4), IN `temperatura` VARCHAR(4), IN `presion` VARCHAR(6))   BEGIN
 INSERT INTO triaje VALUES(null, cod_enfermera, cod_pacientes, peso, talla, temperatura, presion, null);
-SET @cod_triaje = (SELECT cod_triaje FROM triaje WHERE cod_paciente = cod_pacientes ORDER BY cod_triaje DESC LIMIT 1);
+SET @cod_triaje = (SELECT cod_triaje FROM triaje WHERE cod_paciente = cod_pacientes ORDER BY 1 DESC LIMIT 1);
 UPDATE atencion SET cod_triaje = @cod_triaje, estado = 1 WHERE cod_atencion = cod_atencions;
 END$$
 
-CREATE PROCEDURE `VerificarTriaje` (IN `cod_pacientes` INT)   SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
+CREATE DEFINER=`root`@`localhost` PROCEDURE `VerificarTriaje` (IN `cod_pacientes` INT)   SELECT a.cod_enfermera, pa.cod_paciente, pa.nhc, pe.dni, pe.nombres, pe.ape_paterno, pe.ape_materno, a.fec_registro, a.estado
 FROM atencion a
 INNER JOIN paciente pa
 INNER JOIN persona pe
@@ -259,30 +274,6 @@ INSERT INTO `atencion` (`cod_atencion`, `cod_paciente`, `cod_especialidad`, `cod
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `enfermera`
---
-
-CREATE TABLE `enfermera` (
-  `cod_enfermera` int(11) NOT NULL,
-  `cod_persona` int(11) NOT NULL,
-  `num_colegiatura` int(11) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `usuario` varchar(20) NOT NULL,
-  `password` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `enfermera`
---
-
-INSERT INTO `enfermera` (`cod_enfermera`, `cod_persona`, `num_colegiatura`, `correo`, `usuario`, `password`) VALUES
-(1000, 1000, 123456, 'jesus@gmail.com', 'jesus', '8d5004c9c74259ab775f63f7131da077814a7636'),
-(1001, 1001, 123456, 'maria@gmail.com', 'maria', 'e21fc56c1a272b630e0d1439079d0598cf8b8329'),
-(1002, 1007, 10000, 'rosa_floresl86@gmail.com', 'rosany', '8fd7d83ac20972d5b6f3644c6b8abb570286ab57');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `especialidad`
 --
 
@@ -306,30 +297,6 @@ INSERT INTO `especialidad` (`cod_especialidad`, `nom_especialidad`) VALUES
 (1007, 'Nutrición'),
 (1008, 'Traumatología'),
 (1009, 'Psicología');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `medico`
---
-
-CREATE TABLE `medico` (
-  `cod_medico` int(11) NOT NULL,
-  `cod_persona` int(11) NOT NULL,
-  `cod_especialidad` int(11) NOT NULL,
-  `num_colegiatura` int(11) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `usuario` varchar(20) NOT NULL,
-  `password` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `medico`
---
-
-INSERT INTO `medico` (`cod_medico`, `cod_persona`, `cod_especialidad`, `num_colegiatura`, `correo`, `usuario`, `password`) VALUES
-(1000, 1005, 1001, 123456, 'oscar@gmail.com', 'oscar', '2dff4fc90e2973f54d62e257480de234bc59e2c4'),
-(1001, 1008, 1004, 10000, 'edwinfuertesescudero@gmail.com', 'edwin', '3c7a591985b5e780ebcc40916fdeb443b8541c2a');
 
 -- --------------------------------------------------------
 
@@ -480,7 +447,7 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`cod_persona`, `nombres`, `ape_paterno`, `ape_materno`, `dni`, `telefono`, `fec_nacimiento`, `sexo`, `est_civil`, `departamento`, `provincia`, `distrito`, `direccion`, `fec_registro`) VALUES
-(1000, 'Jesus', 'Piscoya', 'Bances', '74644014', '910029102', '2001-05-03', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-22 01:06:07'),
+(1000, 'Jesus', 'Piscoya', 'Bances', '74644014', '999999999', '2001-05-03', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-22 01:06:07'),
 (1001, 'Maria', 'Mendoza', 'Lopez', '08452140', '998563214', '1998-05-12', 'Femenino', 'Casada', 'Lima', 'Lima', 'Independencia', 'Av. Independencia 456', '2023-04-22 05:07:14'),
 (1005, 'Oscar', 'Piscoya', 'Bances', '08618450', '998541236', '0000-00-00', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Av. Lima 123', '2023-04-30 17:47:22'),
 (1007, 'Rosany', 'Flores', 'Lizana', '41789497', '925163254', '0000-00-00', 'Femenino', 'Casada', 'Lima', 'Lima', 'Independencia', 'Av. Las Américas 435', '2023-06-17 17:28:12'),
@@ -586,6 +553,33 @@ INSERT INTO `persona` (`cod_persona`, `nombres`, `ape_paterno`, `ape_materno`, `
 (1110, 'IVAN SUNI', 'RIMARACHIN', 'PALACIOS', '46833059', '960684048', '1982-10-30', 'Masculino', 'Casado', 'Lima', 'Lima', 'Comas', 'Jirón Camana 295', '2023-06-23 20:06:13'),
 (1111, 'ILIANA', 'GONZALES', 'SAAVEDRA', '09864318', '997321504', '1988-09-21', 'Femenino', 'Casado', 'Lima', 'Lima', 'Los Olivos', 'Av Los Alisos 295', '2023-06-23 20:13:28'),
 (1112, 'JESUS RAFAEL', 'PISCOYA', 'BANCES', '74644014', '9999999', '2023-07-22', 'Masculino', 'Soltero', 'Junín', 'Jauja', 'Julcán', 'av ', '2023-07-22 22:46:56');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `personal`
+--
+
+CREATE TABLE `personal` (
+  `cod_personal` int(11) NOT NULL,
+  `cod_persona` int(11) NOT NULL,
+  `cod_especialidad` int(11) DEFAULT NULL,
+  `tipo_personal` int(11) NOT NULL,
+  `correo` varchar(100) NOT NULL,
+  `usuario` varchar(20) NOT NULL,
+  `password` varchar(70) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `personal`
+--
+
+INSERT INTO `personal` (`cod_personal`, `cod_persona`, `cod_especialidad`, `tipo_personal`, `correo`, `usuario`, `password`) VALUES
+(1000, 1005, 1001, 1, 'oscar@gmail.com', 'oscar', 'f5a1971c2ef02a5ab2263f20895b14e7ac1607d21d28805ca8a7ed31ef802364'),
+(1001, 1008, 1004, 1, 'edwinfuertesescudero@gmail.com', 'edwin', '3dfbf1fbdbf9d2eb39e14955dcfd073792ebed8c9b97995210e70c4059be13c9'),
+(1002, 1000, NULL, 2, 'jesus@gmail.com', 'jesus', 'a54e71f0e17f5aaf7946e66ab42cf3b1fd4e61d60581736c9f0eb1c3f794eb7c'),
+(1003, 1001, NULL, 2, 'maria@gmail.com', 'maria', '94aec9fbed989ece189a7e172c9cf41669050495152bc4c1dbf2a38d7fd85627'),
+(1004, 1007, NULL, 2, 'rosa_floresl86@gmail.com', 'rosany', '6a61eb7383e868f226d30d31c95348371760d993de5a098747a36923bdcaf25c');
 
 -- --------------------------------------------------------
 
@@ -726,25 +720,10 @@ ALTER TABLE `atencion`
   ADD KEY `cod_medico` (`cod_medico`);
 
 --
--- Indices de la tabla `enfermera`
---
-ALTER TABLE `enfermera`
-  ADD PRIMARY KEY (`cod_enfermera`),
-  ADD KEY `cod_persona` (`cod_persona`);
-
---
 -- Indices de la tabla `especialidad`
 --
 ALTER TABLE `especialidad`
   ADD PRIMARY KEY (`cod_especialidad`);
-
---
--- Indices de la tabla `medico`
---
-ALTER TABLE `medico`
-  ADD PRIMARY KEY (`cod_medico`),
-  ADD KEY `cod_persona` (`cod_persona`),
-  ADD KEY `cod_especialidad` (`cod_especialidad`);
 
 --
 -- Indices de la tabla `paciente`
@@ -758,6 +737,14 @@ ALTER TABLE `paciente`
 --
 ALTER TABLE `persona`
   ADD PRIMARY KEY (`cod_persona`);
+
+--
+-- Indices de la tabla `personal`
+--
+ALTER TABLE `personal`
+  ADD PRIMARY KEY (`cod_personal`),
+  ADD KEY `cod_persona` (`cod_persona`),
+  ADD KEY `cod_especialidad` (`cod_especialidad`);
 
 --
 -- Indices de la tabla `triaje`
@@ -778,22 +765,10 @@ ALTER TABLE `atencion`
   MODIFY `cod_atencion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
--- AUTO_INCREMENT de la tabla `enfermera`
---
-ALTER TABLE `enfermera`
-  MODIFY `cod_enfermera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1003;
-
---
 -- AUTO_INCREMENT de la tabla `especialidad`
 --
 ALTER TABLE `especialidad`
   MODIFY `cod_especialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1010;
-
---
--- AUTO_INCREMENT de la tabla `medico`
---
-ALTER TABLE `medico`
-  MODIFY `cod_medico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1002;
 
 --
 -- AUTO_INCREMENT de la tabla `paciente`
@@ -806,6 +781,12 @@ ALTER TABLE `paciente`
 --
 ALTER TABLE `persona`
   MODIFY `cod_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1113;
+
+--
+-- AUTO_INCREMENT de la tabla `personal`
+--
+ALTER TABLE `personal`
+  MODIFY `cod_personal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1005;
 
 --
 -- AUTO_INCREMENT de la tabla `triaje`
@@ -823,22 +804,9 @@ ALTER TABLE `triaje`
 ALTER TABLE `atencion`
   ADD CONSTRAINT `atencion_ibfk_1` FOREIGN KEY (`cod_paciente`) REFERENCES `paciente` (`cod_paciente`),
   ADD CONSTRAINT `atencion_ibfk_3` FOREIGN KEY (`cod_especialidad`) REFERENCES `especialidad` (`cod_especialidad`),
-  ADD CONSTRAINT `atencion_ibfk_4` FOREIGN KEY (`cod_enfermera`) REFERENCES `enfermera` (`cod_enfermera`),
+  ADD CONSTRAINT `atencion_ibfk_4` FOREIGN KEY (`cod_enfermera`) REFERENCES `personal` (`cod_personal`),
   ADD CONSTRAINT `atencion_ibfk_5` FOREIGN KEY (`cod_triaje`) REFERENCES `triaje` (`cod_triaje`),
-  ADD CONSTRAINT `atencion_ibfk_6` FOREIGN KEY (`cod_medico`) REFERENCES `medico` (`cod_medico`);
-
---
--- Filtros para la tabla `enfermera`
---
-ALTER TABLE `enfermera`
-  ADD CONSTRAINT `enfermera_ibfk_1` FOREIGN KEY (`cod_persona`) REFERENCES `persona` (`cod_persona`);
-
---
--- Filtros para la tabla `medico`
---
-ALTER TABLE `medico`
-  ADD CONSTRAINT `medico_ibfk_1` FOREIGN KEY (`cod_persona`) REFERENCES `persona` (`cod_persona`),
-  ADD CONSTRAINT `medico_ibfk_2` FOREIGN KEY (`cod_especialidad`) REFERENCES `especialidad` (`cod_especialidad`);
+  ADD CONSTRAINT `atencion_ibfk_6` FOREIGN KEY (`cod_medico`) REFERENCES `personal` (`cod_personal`);
 
 --
 -- Filtros para la tabla `paciente`
@@ -847,10 +815,17 @@ ALTER TABLE `paciente`
   ADD CONSTRAINT `paciente_ibfk_1` FOREIGN KEY (`cod_persona`) REFERENCES `persona` (`cod_persona`);
 
 --
+-- Filtros para la tabla `personal`
+--
+ALTER TABLE `personal`
+  ADD CONSTRAINT `personal_ibfk_1` FOREIGN KEY (`cod_persona`) REFERENCES `persona` (`cod_persona`),
+  ADD CONSTRAINT `personal_ibfk_2` FOREIGN KEY (`cod_especialidad`) REFERENCES `especialidad` (`cod_especialidad`);
+
+--
 -- Filtros para la tabla `triaje`
 --
 ALTER TABLE `triaje`
-  ADD CONSTRAINT `triaje_ibfk_1` FOREIGN KEY (`cod_enfermera`) REFERENCES `enfermera` (`cod_enfermera`),
+  ADD CONSTRAINT `triaje_ibfk_1` FOREIGN KEY (`cod_enfermera`) REFERENCES `personal` (`cod_personal`),
   ADD CONSTRAINT `triaje_ibfk_2` FOREIGN KEY (`cod_paciente`) REFERENCES `paciente` (`cod_paciente`);
 COMMIT;
 

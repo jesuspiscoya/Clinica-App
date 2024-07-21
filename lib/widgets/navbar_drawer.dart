@@ -1,18 +1,15 @@
-import 'package:clinica_app/model/enfermera.dart';
-import 'package:clinica_app/model/medico.dart';
+import 'package:clinica_app/model/personal.dart';
 import 'package:clinica_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class NavbarDrawer extends StatefulWidget {
   int index = 0;
-  final Enfermera? enfermera;
-  final Medico? medico;
+  final Personal personal;
   final Function currentIndex;
 
   NavbarDrawer({
     super.key,
-    this.enfermera,
-    this.medico,
+    required this.personal,
     required this.currentIndex,
   });
 
@@ -29,20 +26,17 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(
-                widget.enfermera != null
-                    ? '${widget.enfermera!.nombres} ${widget.enfermera!.apellidoPaterno}'
-                    : '${widget.medico!.nombres} ${widget.medico!.apellidoPaterno}',
+                '${widget.personal.nombres} ${widget.personal.apellidoPaterno}',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             accountEmail: Text(
-                widget.enfermera != null
-                    ? 'Personal de Salud'
-                    : 'Médico ${widget.medico!.especialidad}',
+                widget.personal.tipoPersonal == '1'
+                    ? 'Médico ${widget.personal.especialidad}'
+                    : 'Personal de Salud',
                 style: const TextStyle(
                     color: Colors.amber, fontWeight: FontWeight.w600)),
-            currentAccountPicture: const CircleAvatar(
-                // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
-                child: Icon(Icons.person_rounded, size: 55)),
+            currentAccountPicture:
+                const CircleAvatar(child: Icon(Icons.person_rounded, size: 55)),
             decoration: const BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.bottomLeft,
@@ -56,25 +50,29 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                     BorderRadius.vertical(bottom: Radius.circular(30))),
           ),
           const SizedBox(height: 10),
-          widget.enfermera != null
-              ? itemDrawer(Icons.person_search_rounded, 'Nueva Atención',
-                  Colors.white, 0)
-              : itemDrawer(
-                  Icons.pending_actions_rounded, 'Pendientes', Colors.white, 0),
+          widget.personal.tipoPersonal == '1'
+              ? Column(
+                  children: [
+                    itemDrawer(Icons.pending_actions_rounded, 'Pendientes',
+                        Colors.white, 0),
+                    const SizedBox(height: 15),
+                    itemDrawer(
+                        Icons.checklist_rounded, 'Historial', Colors.white, 1),
+                  ],
+                )
+              : Column(
+                  children: [
+                    itemDrawer(Icons.person_search_rounded, 'Nueva Atención',
+                        Colors.white, 0),
+                    const SizedBox(height: 15),
+                    itemDrawer(Icons.person_add_alt_rounded,
+                        'Registrar Paciente', Colors.white, 1),
+                    const SizedBox(height: 15),
+                    itemDrawer(Icons.monitor_heart_rounded, 'Registrar Triaje',
+                        Colors.white, 2),
+                  ],
+                ),
           const SizedBox(height: 15),
-          widget.enfermera != null
-              ? itemDrawer(Icons.person_add_alt_rounded, 'Registrar Paciente',
-                  Colors.white, 1)
-              : itemDrawer(
-                  Icons.checklist_rounded, 'Historial', Colors.white, 1),
-          const SizedBox(height: 15),
-          widget.enfermera != null
-              ? itemDrawer(Icons.monitor_heart_rounded, 'Registrar Triaje',
-                  Colors.white, 2)
-              : const SizedBox(),
-          widget.enfermera != null
-              ? const SizedBox(height: 15)
-              : const SizedBox(),
           itemDrawer(Icons.person_rounded, 'Perfil', Colors.white, 3),
           const Expanded(child: SizedBox()),
           const Divider(thickness: 0.3, color: Colors.white),

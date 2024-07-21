@@ -1,5 +1,4 @@
-import 'package:clinica_app/model/enfermera.dart';
-import 'package:clinica_app/model/medico.dart';
+import 'package:clinica_app/model/personal.dart';
 import 'package:clinica_app/pages/home_page.dart';
 import 'package:clinica_app/services/login_dao.dart';
 import 'package:flutter/material.dart';
@@ -159,36 +158,32 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => loader = true);
       FocusScope.of(context).unfocus();
       LoginDao()
-          .loginEnfermera(usuarioController.text, passwordController.text)
+          .login(usuarioController.text, passwordController.text)
           .then((value) {
-        if (value == null) {
-          LoginDao()
-              .loginMedico(usuarioController.text, passwordController.text)
-              .then((value) {
-            if (value == null) {
-              setState(() => loader = false);
-              Fluttertoast.showToast(
-                  msg: "Usuario o contraseña incorrecta.",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            } else {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          HomePage(medico: Medico.fromLogin(value))));
-            }
-          });
+        if (value != null) {
+          if (value['tipo_personal'] == 1) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(personal: Personal.fromLogin(value))));
+          } else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(personal: Personal.fromLogin(value))));
+          }
         } else {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      HomePage(enfermera: Enfermera.fromLogin(value))));
+          setState(() => loader = false);
+          Fluttertoast.showToast(
+              msg: "Usuario o contraseña incorrecta.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
         }
       });
     }

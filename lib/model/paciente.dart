@@ -1,20 +1,20 @@
 class Paciente {
-  final String? codigo;
-  final String nombres;
-  final String paterno;
-  final String materno;
-  late final String dni;
-  late final String telefono;
-  final String nacimiento;
-  final String sexo;
-  final String estadoCivil;
-  late final String departamento;
-  late final String provincia;
-  late final String distrito;
-  late final String direccion;
-  final String nhc;
-  final String sangre;
-  final String donacion;
+  late String? codigo;
+  late String nombres;
+  late String paterno;
+  late String materno;
+  late String dni;
+  late String telefono;
+  late String nacimiento;
+  late String sexo;
+  late String estadoCivil;
+  late String departamento;
+  late String provincia;
+  late String distrito;
+  late String direccion;
+  late String nhc;
+  late String sangre;
+  late String donacion;
 
   Paciente({
     this.codigo,

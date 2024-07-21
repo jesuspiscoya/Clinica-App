@@ -9,15 +9,19 @@ import 'package:http/http.dart' as http;
 class InputForm extends StatefulWidget {
   final String label;
   final bool active;
-  final TextEditingController inputController;
+  final dynamic initial;
+  final dynamic inputController;
   final Function? buscarDni;
+  final bool password;
 
   const InputForm({
     super.key,
     required this.label,
     required this.active,
-    required this.inputController,
+    this.initial,
+    this.inputController,
     this.buscarDni,
+    this.password = false,
   });
 
   @override
@@ -34,6 +38,8 @@ class _InputFormState extends State<InputForm> {
       child: TextFormField(
         key: widget.label == 'DNI' ? keyDni : null,
         enabled: widget.active,
+        obscureText: widget.password,
+        initialValue: widget.initial,
         controller: widget.inputController,
         maxLines: widget.label == 'Síntomas' ||
                 widget.label == 'Diagnóstico' ||

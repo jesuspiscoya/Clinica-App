@@ -1,9 +1,8 @@
-import 'package:clinica_app/model/medico.dart';
+import 'package:clinica_app/model/personal.dart';
 import 'package:clinica_app/pages/atencion_page.dart';
 import 'package:clinica_app/pages/historial_page.dart';
 import 'package:clinica_app/pages/pendientes_page.dart';
 import 'package:clinica_app/widgets/navbar_drawer.dart';
-import 'package:clinica_app/model/enfermera.dart';
 import 'package:clinica_app/pages/profile_page.dart';
 import 'package:clinica_app/pages/register_page.dart';
 import 'package:clinica_app/pages/triage_page.dart';
@@ -12,10 +11,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  final Enfermera? enfermera;
-  final Medico? medico;
+  final Personal personal;
 
-  const HomePage({super.key, this.enfermera, this.medico});
+  const HomePage({super.key, required this.personal});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -41,30 +39,29 @@ class _HomePageState extends State<HomePage> {
     initializeDateFormatting('es-PE', '').then((value) =>
         formattedDate = DateFormat.yMMMMEEEEd('es-PE').format(DateTime.now()));
     navbarPage = NavbarDrawer(
-        enfermera: widget.enfermera,
-        medico: widget.medico,
+        personal: widget.personal,
         currentIndex: (i) => setState(() {
               index = i;
               dni = '';
               nhc = '';
               paciente = '';
             }));
-    atencionPage = AtencionPage(
-        codEnfermera: widget.enfermera != null ? widget.enfermera!.codigo : '');
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> listPages = [
-      widget.enfermera != null
-          ? atencionPage
-          : PendientesPage(codMedico: widget.medico!.codigo),
-      widget.enfermera != null
-          ? const RegisterPage()
-          : HistorialPage(codMedico: widget.medico!.codigo),
-      widget.enfermera != null ? const TriagePage() : const SizedBox(),
-      const ProfilePage(),
+      widget.personal.tipoPersonal == '1'
+          ? PendientesPage(codMedico: widget.personal.codigo)
+          : AtencionPage(codEnfermera: widget.personal.codigo),
+      widget.personal.tipoPersonal == '1'
+          ? HistorialPage(codMedico: widget.personal.codigo)
+          : const RegisterPage(),
+      widget.personal.tipoPersonal == '1'
+          ? const SizedBox()
+          : const TriagePage(),
+      ProfilePage(personal: widget.personal),
     ];
 
     return Scaffold(
@@ -100,19 +97,6 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white, size: 33),
                     onPressed: () => Scaffold.of(context).openDrawer()))),
         leadingWidth: 55,
-        actions: [
-          MaterialButton(
-              minWidth: 0,
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-              child: const CircleAvatar(
-                  maxRadius: 22,
-                  backgroundColor: Colors.transparent,
-                  // child: Image.asset('assets/profile.png', fit: BoxFit.cover)),
-                  child: Icon(Icons.person_rounded, size: 35)),
-              onPressed: () => true),
-          const SizedBox(width: 13)
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -126,9 +110,7 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     Text(
-                      widget.enfermera != null
-                          ? '$saludo, ${widget.enfermera!.nombres} ${widget.enfermera!.apellidoPaterno}'
-                          : '$saludo, ${widget.medico!.nombres} ${widget.medico!.apellidoPaterno}',
+                      '$saludo, ${widget.personal.nombres} ${widget.personal.apellidoPaterno}',
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 19,

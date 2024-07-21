@@ -1,23 +1,23 @@
 import 'package:intl/intl.dart';
 
 class Atencion {
-  late final String? codigo;
-  late final String? codPaciente;
-  late final String? codEspecialidad;
-  late final String? codEnfermera;
-  late final String? codTriaje;
-  late final String? codMedico;
-  late final String? sintomas;
-  late final String? diagnostico;
-  late final String? tratamiento;
-  late final String? observaciones;
-  late final String? examenes;
-  late final DateTime fecha;
-  late final String nhc;
-  late final String dni;
-  late final String nombres;
-  late final String paterno;
-  late final String materno;
+  late String? codigo;
+  late String? codPaciente;
+  late String? codEspecialidad;
+  late String? codEnfermera;
+  late String? codTriaje;
+  late String? codMedico;
+  late String? sintomas;
+  late String? diagnostico;
+  late String? tratamiento;
+  late String? observaciones;
+  late String? examenes;
+  late DateTime fecha;
+  late String nhc;
+  late String dni;
+  late String nombres;
+  late String paterno;
+  late String materno;
 
   Atencion({
     this.codigo,

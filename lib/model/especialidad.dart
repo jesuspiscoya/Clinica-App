@@ -1,6 +1,6 @@
 class Especialidad {
-  String codigo;
-  String nombre;
+  late String codigo;
+  late String nombre;
 
   Especialidad.fromMap(Map<String, dynamic> item)
       : codigo = item['cod_especialidad']!,

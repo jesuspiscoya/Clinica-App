@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:clinica_app/model/host.dart';
 import 'package:clinica_app/model/paciente.dart';
 import 'package:http/http.dart' as http;
 
 class PacienteDao {
-  static const String host = 'http://10.0.2.2:80/api_clinica';
+  static String host = Host.getHost;
 
   Future<bool> registrar(Paciente paciente) async {
     var response = await http.post(Uri.parse('$host/registrar_paciente.php'),
