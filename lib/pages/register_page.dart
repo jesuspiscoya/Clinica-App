@@ -2,7 +2,7 @@ import 'package:clinica_app/widgets/dropdown_form.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/dropdown_ubigeo.dart';
 import 'package:clinica_app/model/paciente.dart';
-import 'package:clinica_app/services/paciente_dao.dart';
+import 'package:clinica_app/controller/paciente_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -182,7 +182,7 @@ class _RegisterPageState extends State<RegisterPage> {
           nhc: '10000',
           sangre: dropdownTipo.value!,
           donacion: dropdownDonacion.value!);
-      PacienteDao().registrar(paciente).then((value) {
+      PacienteController().registrar(paciente).then((value) {
         if (value) {
           limpiar();
           showToast('Paciente registrado con éxito.', Colors.green);
@@ -195,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void limpiar() {
-    // dniController.clear();
+    dniController.clear();
     nombresController.clear();
     apellidosController.clear();
     telefonoController.clear();

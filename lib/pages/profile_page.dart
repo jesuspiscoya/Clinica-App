@@ -1,6 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:clinica_app/model/personal.dart';
-import 'package:clinica_app/services/personal_dao.dart';
+import 'package:clinica_app/controller/personal_controller.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -64,6 +64,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       label: 'Especialidad',
                                       active: false,
                                       initial: widget.personal.especialidad)
+                                  : const SizedBox(),
+                              widget.personal.tipoPersonal == '1'
+                                  ? const SizedBox(height: 10)
                                   : const SizedBox(),
                               InputForm(
                                   label: 'Nombres',
@@ -147,12 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   password: true,
                                   inputController: password2Controller),
                               const SizedBox(height: 13),
-                              buttonActualizar(() {
-                                submitPassword();
-                                selected = false;
-                                passwordController.clear();
-                                password2Controller.clear();
-                              })
+                              buttonActualizar(() => submitPassword())
                             ],
                           ),
                         ),
@@ -239,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
           correo: correoController.text,
           telefono: telefonoController.text,
           direccion: direccionController.text);
-      PersonalDao().actualizarPersonal(personal).then((value) {
+      PersonalController().actualizarPersonal(personal).then((value) {
         if (value != null) {
           showToast('Datos actualizados con éxito.', Colors.green);
           widget.personal = Personal.fromLogin(value);
@@ -257,9 +255,12 @@ class _ProfilePageState extends State<ProfilePage> {
           codigo: widget.personal.codigo,
           password: passwordController.text,
         );
-        PersonalDao().actualizarPassword(personal).then((value) {
+        PersonalController().actualizarPassword(personal).then((value) {
           if (value) {
             showToast('Contraseña actualizada con éxito.', Colors.green);
+            setState(() => selected = false);
+            passwordController.clear();
+            password2Controller.clear();
           } else {
             showToast('Error al actualizar contraseña.', Colors.red);
           }

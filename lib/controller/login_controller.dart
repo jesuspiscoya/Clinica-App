@@ -4,7 +4,7 @@ import 'package:clinica_app/model/host.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
-class LoginDao {
+class LoginController {
   static String host = Host.getHost;
 
   Future<dynamic> login(String usuario, String password) async {

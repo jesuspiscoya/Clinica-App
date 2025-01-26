@@ -1,6 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:clinica_app/model/triaje.dart';
-import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/controller/triaje_controller.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -182,7 +182,7 @@ class _AlertdialogListaState extends State<AlertdialogLista> {
           talla: tallaController.text,
           temperatura: temperaturaController.text,
           presion: presionController.text);
-      TriajeDao().registrar(triaje).then((value) {
+      TriajeController().registrar(triaje).then((value) {
         if (value) {
           limpiar();
           showToast('Datos registrados con éxito.', Colors.green);

@@ -1,5 +1,5 @@
 import 'package:clinica_app/model/especialidad.dart';
-import 'package:clinica_app/services/atencion_dao.dart';
+import 'package:clinica_app/controller/atencion_controller.dart';
 import 'package:flutter/material.dart';
 
 class DropdownForm extends StatefulWidget {
@@ -26,7 +26,7 @@ class _DropdownFormState extends State<DropdownForm> {
   }
 
   void getItems() async {
-    final data = await AtencionDao().listarEspecialidad();
+    final data = await AtencionController().listarEspecialidad();
     setState(() => itemsEspecialidad = data);
   }
 

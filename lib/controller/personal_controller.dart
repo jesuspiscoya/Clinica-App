@@ -5,7 +5,7 @@ import 'package:clinica_app/model/personal.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
-class PersonalDao {
+class PersonalController {
   static String host = Host.getHost;
 
   Future<dynamic> actualizarPersonal(Personal personal) async {

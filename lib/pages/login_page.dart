@@ -1,6 +1,6 @@
 import 'package:clinica_app/model/personal.dart';
 import 'package:clinica_app/pages/home_page.dart';
-import 'package:clinica_app/services/login_dao.dart';
+import 'package:clinica_app/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
     if (formKey.currentState!.validate()) {
       setState(() => loader = true);
       FocusScope.of(context).unfocus();
-      LoginDao()
+      LoginController()
           .login(usuarioController.text, passwordController.text)
           .then((value) {
         if (value != null) {

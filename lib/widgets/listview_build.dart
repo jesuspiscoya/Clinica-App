@@ -1,5 +1,5 @@
 import 'package:clinica_app/model/atencion.dart';
-import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/controller/triaje_controller.dart';
 import 'package:clinica_app/widgets/alertdialog_lista.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,10 +93,12 @@ class _ListviewBuildState extends State<ListviewBuild> {
                                           nhc: atencion.nhc,
                                           paciente:
                                               '${atencion.nombres} ${atencion.paterno} ${atencion.materno}',
-                                          selectPendiente: () => TriajeDao()
-                                              .listarPendientes()
-                                              .then((value) => setState(() =>
-                                                  listaAtencion = value))))
+                                          selectPendiente: () =>
+                                              TriajeController()
+                                                  .listarPendientes()
+                                                  .then((value) => setState(
+                                                      () => listaAtencion =
+                                                          value))))
                                   : setState(
                                       () => widget.selectPendiente!(atencion)));
                         },

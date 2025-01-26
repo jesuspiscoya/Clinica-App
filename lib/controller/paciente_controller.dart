@@ -4,7 +4,7 @@ import 'package:clinica_app/model/host.dart';
 import 'package:clinica_app/model/paciente.dart';
 import 'package:http/http.dart' as http;
 
-class PacienteDao {
+class PacienteController {
   static String host = Host.getHost;
 
   Future<bool> registrar(Paciente paciente) async {

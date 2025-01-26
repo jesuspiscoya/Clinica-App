@@ -4,7 +4,7 @@ require 'conexion.php';
 $obj = new Conexion;
 $conexion = $obj->getConexion();
 
-$sql = "CALL ListarAtencionesPendientes";
+$sql = "CALL ListarAtencionesPendientes('" . $_POST['cod_medico'] . "')";
 $resultado = $conexion->query($sql);
 $array = array();
 

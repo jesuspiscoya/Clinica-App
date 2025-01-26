@@ -1,4 +1,4 @@
-import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/controller/triaje_controller.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class TriagePage extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         ListviewBuild(
-            medico: false, listaFuture: TriajeDao().listarPendientes()),
+            medico: false, listaFuture: TriajeController().listarPendientes()),
       ],
     );
   }

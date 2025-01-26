@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:clinica_app/model/atencion.dart';
-import 'package:clinica_app/services/atencion_dao.dart';
-import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/controller/atencion_controller.dart';
+import 'package:clinica_app/controller/triaje_controller.dart';
 import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,8 @@ class _HistorialPageState extends State<HistorialPage> {
         !selected
             ? ListviewBuild(
                 medico: true,
-                listaFuture: AtencionDao().listarHistorial(widget.codMedico),
+                listaFuture:
+                    AtencionController().listarHistorial(widget.codMedico),
                 selectPendiente: (atencion) => setState(() {
                       selected = true;
                       this.atencion = atencion;
@@ -53,7 +54,7 @@ class _HistorialPageState extends State<HistorialPage> {
                 duration: const Duration(milliseconds: 250),
                 from: MediaQuery.of(context).size.width,
                 child: FutureBuilder(
-                  future: TriajeDao().buscarTriaje(atencion.codTriaje!),
+                  future: TriajeController().buscarTriaje(atencion.codTriaje!),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(

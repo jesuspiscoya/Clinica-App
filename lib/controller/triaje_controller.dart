@@ -5,7 +5,7 @@ import 'package:clinica_app/model/host.dart';
 import 'package:clinica_app/model/triaje.dart';
 import 'package:http/http.dart' as http;
 
-class TriajeDao {
+class TriajeController {
   static String host = Host.getHost;
 
   Future<Triaje> buscarTriaje(String codTriaje) async {
@@ -21,7 +21,7 @@ class TriajeDao {
   }
 
   Future<List<Atencion>> listarPendientes() async {
-    var response = await http.post(Uri.parse('$host/listar_triajes.php'));
+    var response = await http.get(Uri.parse('$host/listar_triajes.php'));
     return (json.decode(response.body) as List)
         .map((e) => Atencion.fromTriaje(e))
         .toList();

@@ -1,10 +1,10 @@
 import 'package:clinica_app/model/atencion.dart';
 import 'package:clinica_app/model/paciente.dart';
-import 'package:clinica_app/services/atencion_dao.dart';
-import 'package:clinica_app/services/triaje_dao.dart';
+import 'package:clinica_app/controller/atencion_controller.dart';
+import 'package:clinica_app/controller/triaje_controller.dart';
 import 'package:clinica_app/widgets/dropdown_form.dart';
 import 'package:clinica_app/widgets/input_form.dart';
-import 'package:clinica_app/services/paciente_dao.dart';
+import 'package:clinica_app/controller/paciente_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -194,7 +194,7 @@ class _AtencionPageState extends State<AtencionPage> {
     if (formKeyBuscar.currentState!.validate()) {
       setState(() => loader = true);
       if (dniController.text.length > 7) {
-        PacienteDao().buscar(dniController.text).then((value) {
+        PacienteController().buscar(dniController.text).then((value) {
           if (value == null) {
             limpiar();
             showToast('Paciente no registrado.', Colors.red);
@@ -247,13 +247,13 @@ class _AtencionPageState extends State<AtencionPage> {
 
   void submitRegistrar() {
     if (formKeyRegistrar.currentState!.validate()) {
-      TriajeDao().verificarTriaje(codPaciente).then((value) {
+      TriajeController().verificarTriaje(codPaciente).then((value) {
         if (value) {
           Atencion atencion = Atencion(
               codPaciente: codPaciente,
               codEspecialidad: dropdownEspecialidad.value!,
               codEnfermera: widget.codEnfermera);
-          AtencionDao().registrar(atencion).then((value) {
+          AtencionController().registrar(atencion).then((value) {
             if (value) {
               limpiar();
               showToast('Atención registrada con éxito.', Colors.green);
