@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 27-01-2025 a las 15:53:58
+-- Tiempo de generación: 01-02-2025 a las 23:10:16
 -- Versión del servidor: 8.0.39-30
 -- Versión de PHP: 7.4.33
 
@@ -94,16 +94,20 @@ CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarAtencion` (IN `co
 INSERT INTO atencion (cod_paciente, cod_especialidad, cod_enfermera) VALUES(cod_paciente, cod_especialidad, cod_enfermera);
 END$$
 
-CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
-INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
+CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarEnfermera` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+INSERT INTO persona(nombres,ape_paterno,ape_materno,dni, telefono,fec_nacimiento,sexo,est_civil, departamento,provincia,distrito,direccion)
+VALUES(nombre,paterno,materno,dni,telefono,nacimiento,sexo,civil, departamento,provincia,distrito,direccion);
 SET @cod_per = (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1);
-INSERT INTO personal VALUES(null, @cod_per, 2, null, colegiatura, correo, user, SHA(pass));
+INSERT INTO personal(cod_persona,tipo_personal,correo,	usuario,password)
+VALUES(@cod_per,2,correo,user,SHA(pass));
 END$$
 
-CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `colegiatura` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
-INSERT INTO persona VALUES(null, nombre, paterno, materno, dni, telefono, nacimiento, sexo, civil, departamento, provincia, distrito, direccion, null);
+CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarMedico` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `cod_especialidad` INT, IN `correo` VARCHAR(100), IN `user` VARCHAR(20), IN `pass` VARCHAR(50))   BEGIN
+INSERT INTO persona(nombres,ape_paterno,ape_materno,dni, telefono,fec_nacimiento,sexo,est_civil, departamento,provincia,distrito,direccion)
+VALUES(nombre,paterno,materno,dni,telefono,nacimiento,sexo,civil,departamento,provincia,distrito,direccion);
 SET @cod_per = (SELECT cod_persona FROM persona ORDER BY cod_persona DESC LIMIT 1);
-INSERT INTO medico VALUES(null, @cod_per, 1, cod_especialidad, colegiatura, correo, user, SHA(pass));
+INSERT INTO personal(cod_persona,tipo_personal,cod_especialidad,correo,usuario,password)
+VALUES(@cod_per,1,cod_especialidad,correo,user,SHA(pass));
 END$$
 
 CREATE DEFINER=`sdeo6wimghifp`@`localhost` PROCEDURE `RegistrarPaciente` (IN `nombre` VARCHAR(50), IN `paterno` VARCHAR(50), IN `materno` VARCHAR(50), IN `dni` VARCHAR(8), IN `telefono` VARCHAR(9), IN `nacimiento` DATE, IN `sexo` VARCHAR(9), IN `civil` VARCHAR(10), IN `departamento` VARCHAR(50), IN `provincia` VARCHAR(50), IN `distrito` VARCHAR(50), IN `direccion` VARCHAR(100), IN `nhc` INT, IN `sangre` VARCHAR(3), IN `organos` VARCHAR(2))   BEGIN
@@ -150,6 +154,14 @@ CREATE TABLE `atencion` (
   `fec_modificacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `atencion`
+--
+
+INSERT INTO `atencion` (`cod_atencion`, `cod_paciente`, `cod_especialidad`, `cod_enfermera`, `cod_triaje`, `cod_medico`, `sintomas`, `diagnostico`, `tratamiento`, `observaciones`, `examenes`, `estado`, `fec_registro`, `fec_modificacion`) VALUES
+(115, 1115, 1001, 1005, 112, 1006, '-', '-', '-', '-', '-', 2, '2025-02-01 02:20:58', '2025-02-01 03:01:43'),
+(116, 1116, 1001, 1005, 113, 1006, 'Resequedad en los labios', 'El motivo de la resequedad en los labios, es debido a las pastillas para acné (isotretinoína)', 'Tratar con balsamo labial de manera diaria', 'Sin observaciones', 'No aplica', 2, '2025-02-01 16:48:17', '2025-02-01 17:22:58');
+
 -- --------------------------------------------------------
 
 --
@@ -191,6 +203,14 @@ CREATE TABLE `paciente` (
   `don_organos` varchar(2) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `paciente`
+--
+
+INSERT INTO `paciente` (`cod_paciente`, `nhc`, `cod_persona`, `tip_sangre`, `don_organos`) VALUES
+(1115, 10000, 1125, 'O+', 'No'),
+(1116, 10000, 1126, 'O+', 'No');
+
 -- --------------------------------------------------------
 
 --
@@ -214,6 +234,19 @@ CREATE TABLE `persona` (
   `fec_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `persona`
+--
+
+INSERT INTO `persona` (`cod_persona`, `nombres`, `ape_paterno`, `ape_materno`, `dni`, `telefono`, `fec_nacimiento`, `sexo`, `est_civil`, `departamento`, `provincia`, `distrito`, `direccion`, `fec_registro`) VALUES
+(1120, 'Maria', 'Mendoza', 'Laros', '09873627', '999999999', '1999-12-20', 'Femenino', 'Soltera', 'Lima', 'Lima', 'Lima', 'Lima', '2025-02-01 02:11:32'),
+(1121, 'Oscar', 'Piscoya', 'Bances', '09873627', '999999999', '1990-07-10', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Lima', 'Lima', '2025-02-01 02:19:17'),
+(1122, 'Oscar', 'Piscoya', 'Bances', '08649248', '999999999', '1990-07-10', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Lima', 'Lima', '2025-02-01 02:19:26'),
+(1123, 'Oscar', 'Piscoya', 'Bances', '08649248', '999999999', '1990-07-10', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Lima', 'Lima', '2025-02-01 02:19:34'),
+(1124, 'Oscar', 'Piscoya', 'Bances', '08649248', '999999999', '1990-07-10', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Lima', 'Lima', '2025-02-01 02:19:59'),
+(1125, 'VIOLETA', 'BANCES', 'VARGAS', '08618610', '907543438', '1994-01-13', 'Femenino', 'Soltero', 'Lima', 'Lima', 'Ancón', 'Lima 123', '2025-02-01 02:20:46'),
+(1126, 'LUCAS MANUEL VALENTIN', 'BERNABE', 'CORDOVA', '75413495', '984758293', '2000-01-23', 'Masculino', 'Soltero', 'Lima', 'Lima', 'Los Olivos', 'Calle las estrellas 7292', '2025-02-01 16:47:50');
+
 -- --------------------------------------------------------
 
 --
@@ -225,11 +258,19 @@ CREATE TABLE `personal` (
   `cod_persona` int NOT NULL,
   `tipo_personal` int NOT NULL,
   `cod_especialidad` int DEFAULT NULL,
-  `num_colegiatura` int NOT NULL,
+  `num_colegiatura` int DEFAULT NULL,
   `correo` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `usuario` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `personal`
+--
+
+INSERT INTO `personal` (`cod_personal`, `cod_persona`, `tipo_personal`, `cod_especialidad`, `num_colegiatura`, `correo`, `usuario`, `password`) VALUES
+(1005, 1120, 2, NULL, NULL, 'maria@gmail.com', 'maria', '94aec9fbed989ece189a7e172c9cf41669050495152bc4c1db'),
+(1006, 1124, 1, 1001, NULL, 'oscar@gmail.com', 'oscar', 'f5a1971c2ef02a5ab2263f20895b14e7ac1607d21d28805ca8');
 
 -- --------------------------------------------------------
 
@@ -242,11 +283,19 @@ CREATE TABLE `triaje` (
   `cod_enfermera` int NOT NULL,
   `cod_paciente` int NOT NULL,
   `peso` float NOT NULL,
-  `talla` int NOT NULL,
+  `talla` float NOT NULL,
   `temperatura` float NOT NULL,
   `presion` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
   `fec_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `triaje`
+--
+
+INSERT INTO `triaje` (`cod_triaje`, `cod_enfermera`, `cod_paciente`, `peso`, `talla`, `temperatura`, `presion`, `fec_registro`) VALUES
+(112, 1005, 1115, 60, 1.5, 23, '160', '2025-02-01 02:28:13'),
+(113, 1005, 1116, 72, 1.66, 36, '120/80', '2025-02-01 16:49:05');
 
 --
 -- Índices para tablas volcadas
@@ -306,37 +355,37 @@ ALTER TABLE `triaje`
 -- AUTO_INCREMENT de la tabla `atencion`
 --
 ALTER TABLE `atencion`
-  MODIFY `cod_atencion` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_atencion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidad`
 --
 ALTER TABLE `especialidad`
-  MODIFY `cod_especialidad` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_especialidad` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1010;
 
 --
 -- AUTO_INCREMENT de la tabla `paciente`
 --
 ALTER TABLE `paciente`
-  MODIFY `cod_paciente` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_paciente` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1117;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `cod_persona` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_persona` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1127;
 
 --
 -- AUTO_INCREMENT de la tabla `personal`
 --
 ALTER TABLE `personal`
-  MODIFY `cod_personal` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_personal` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1007;
 
 --
 -- AUTO_INCREMENT de la tabla `triaje`
 --
 ALTER TABLE `triaje`
-  MODIFY `cod_triaje` int NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_triaje` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- Restricciones para tablas volcadas
