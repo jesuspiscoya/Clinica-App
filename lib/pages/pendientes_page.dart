@@ -6,6 +6,7 @@ import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:signature/signature.dart';
 
 class PendientesPage extends StatefulWidget {
   final String codMedico;
@@ -24,8 +25,16 @@ class _PendientesPageState extends State<PendientesPage> {
   TextEditingController tratamientoController = TextEditingController();
   TextEditingController observacionesController = TextEditingController();
   TextEditingController examenesController = TextEditingController();
+  SignatureController signatureController =
+      SignatureController(penStrokeWidth: 4);
   bool selected = false;
   late Atencion atencion;
+
+  @override
+  void dispose() {
+    signatureController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +163,40 @@ class _PendientesPageState extends State<PendientesPage> {
                                   label: 'Exámenes',
                                   active: true,
                                   inputController: examenesController),
+                              const SizedBox(height: 20),
+                              Text('Firma del Médico',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 8),
+                              Container(
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                    gradient: RadialGradient(
+                                      center: Alignment.bottomLeft,
+                                      radius: 1.7,
+                                      colors: <Color>[
+                                        Color.fromARGB(255, 108, 200, 236),
+                                        Color.fromARGB(255, 35, 102, 189)
+                                      ],
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5))),
+                                child: MaterialButton(
+                                  shape: const StadiumBorder(),
+                                  onPressed: () => signatureController
+                                      .clear(), // Limpiar firma
+                                  child: const Text('Limpiar',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Signature(
+                                controller: signatureController,
+                                height: 180,
+                                backgroundColor: Colors.white,
+                              ),
                               const SizedBox(height: 15),
                               buttonRegistrar()
                             ],

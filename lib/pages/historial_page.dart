@@ -6,6 +6,7 @@ import 'package:clinica_app/widgets/input_form.dart';
 import 'package:clinica_app/widgets/listview_build.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:signature/signature.dart';
 
 class HistorialPage extends StatefulWidget {
   final String codMedico;
@@ -23,8 +24,16 @@ class _HistorialPageState extends State<HistorialPage> {
   TextEditingController tratamientoController = TextEditingController();
   TextEditingController observacionesController = TextEditingController();
   TextEditingController examenesController = TextEditingController();
+  SignatureController signatureController =
+      SignatureController(penStrokeWidth: 2);
   bool selected = false;
   late Atencion atencion;
+
+  @override
+  void dispose() {
+    signatureController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +151,16 @@ class _HistorialPageState extends State<HistorialPage> {
                                 label: 'Exámenes',
                                 active: false,
                                 inputController: examenesController),
+                            const SizedBox(height: 20),
+                            Text('Firma del Médico',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 8),
+                            Signature(
+                              controller: signatureController,
+                              height: 150,
+                              backgroundColor: Colors.white,
+                            ),
                           ],
                         ),
                       ),

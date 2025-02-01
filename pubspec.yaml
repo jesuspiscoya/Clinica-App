@@ -23,6 +23,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   crypto: ^3.0.3
+  signature: ^5.5.0
 
 dev_dependencies:
   flutter_test:
